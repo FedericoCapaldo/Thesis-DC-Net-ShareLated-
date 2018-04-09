@@ -1,0 +1,127 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 6CCS3PRJ Final Year Individual Project Report
+% luke.day@kcl.ac.uk
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[12pt]{informatics-report}
+\usepackage{color}
+\usepackage[square,sort,comma,numbers]{natbib}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{indentfirst}
+\usepackage{longtable}
+\usepackage{titlesec}
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\usepackage{float}
+%\floatstyle{boxed}
+%\restylefloat{figure}
+\lstset{frame=single,
+  language=Java,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+
+
+ %References
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Front Matter - project title, name, supervisor name and date
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{6CCS3PRJ\\\vspace{0.2cm}Dining Cryptographers Network Simulation Tool}
+\author{Federico Capaldo}
+\studentID{1444686}
+\supervisor{Professor Luca Viganó}
+
+\date{\today}
+
+\abstractFile{FrontMatter/abstract.tex}
+\ackFile{FrontMatter/acknowledgements.tex} %Remove line if you do not want acknowledgements
+
+
+\titleformat{\subparagraph}
+    {\normalfont\normalsize\bfseries}{\thesubparagraph}{1em}{}
+\titlespacing*{\subparagraph}{\parindent}{3.25ex plus 1ex minus .2ex}{.75ex plus .1ex}
+
+\begin{document}
+\setcounter{secnumdepth}{5}
+
+\createFrontMatter
+\onehalfspacing
+\tableofcontents
+\doublespacing
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Report Content
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% You can write each chapter directly here or in a separate .tex file and use the include command.
+
+\include{Chapters/Intoduction}
+\include{Chapters/Background}
+\include{Chapters/ReqSpec}
+\include{Chapters/Design}
+\include{Chapters/Implementation}
+\include{Chapters/ProfessionalIssues}
+\include{Chapters/Evaluation}
+\include{Chapters/Conclusion}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% References
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliographystyle{plain}
+\bibliography{references}
+\addcontentsline{toc}{section}{Bibliography}
+\begin{thebibliography}{99}
+
+\bibitem{Chaum} Chaum, D. (1988). The dining cryptographers problem: Unconditional sender and recipient untraceability. Journal of Cryptology, [online] 1(1). Available at: http://www.cs.ucsb.edu/~ravenben/classes/595n-s07/papers/dcnet-jcrypt88.pdf [Accessed 10 Mar. 2017].
+
+\bibitem{Anonymity} Oxford Dictionary of English, "Anonymity", 2017
+
+\bibitem{Malkhi} D. Malkhi, "Advanced Course in Computer and Network Security", Jerusalem 2002 - http://www.cs.huji.ac.il/~ns/Anonymity.pdf
+
+\bibitem{Pfitzmann} A. Pfitzmann, M. Kohntop,"Anonymity, Unobservability, and Pseudonymity – A Proposal for Terminology", Germany 2001
+
+\bibitem{Franck} C. Franck, "New Directions for Dining Cryptographers", Luxembourg 2008 - https://secan-lab.uni.lu/images/stories/christian{\_}franck/FRANCK{\_}Christian{\_}Master{\_}Thesis.pdf
+
+\bibitem{Diffie1} W. Diffie, M. E. Hellman, "New Directions in Cryptography", 1976 https://ee.stanford.edu/~hellman/publications/24.pdf
+
+\bibitem{Fischer} Fischer-Hubner, S. (2001). IT-security and privacy. Berlin: Springer, pp.125-128.
+
+\bibitem{Lewin} M. Lewin, "ACCU - All About XOR", 2012 https://accu.org/index.php/journals/1915
+
+\bibitem{Scholz} I. Scholz, "Dining Cryptographers - The Protocol", http://www.eigenheimstrasse.de/svn/dc
+
+\bibitem{wiki1} Wikipedia, "Secure multi-party computation". https://en.wikipedia.org/wiki/Secure{\_}multi-party{\_}computation
+
+\bibitem{Golle} P. Golle, A. Juel, "Dining Cryptographers Revisited", 2004, https://www.freehaven.net/anonbib/cache/golle:eurocrypt2004.pdf 
+
+
+\end{thebibliography}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Appendices
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\appendix
+\include{Appendices/UserGuide}
+\include{Appendices/Examples}
+
+\end{document}

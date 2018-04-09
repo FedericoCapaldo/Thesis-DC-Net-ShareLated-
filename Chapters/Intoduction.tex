@@ -1,0 +1,58 @@
+\chapter{Introduction}
+
+
+In order to protect privacy and freedom of speech, different protocols have been developed in an attempt to provide anonymous or untraceable communication. Anonymity is the opposite of identification, which denotes the absence of signs needed to establish the real identity of a principal; and untraceability is the opposite of accountability, which corresponds to the inability to link an action to a specific principal.
+
+Among the protocols that fulfills such security goals, the Dining Cryptographers Network (DC-Net) is the strongest one that provides both sender and receiver untraceability (not anonymity). In other words, a DC-Net based on one-time keys (only fragment of information securely communicated) provides both perfect secrecy and unconditional security. The former concept refers to the fact that collecting all unencrypted messages will not reveal any information with the respect to the purpose of the protocol (i.e. untraceability); and the latter implies that the protocol is not vulnerable to cryptoanalytic attacks; hence communication, beside the keys-sending phase, can even occur in plain text.
+
+\section{Motivation}
+Based on these facts, the motivation behind the exploration of this protocol is threefold:
+
+\begin{enumerate}
+\item Despite being the most secure protocol in terms of untraceability, DC-Net presents limitations for real-world implementations that can be addressed;
+
+\item There is a scarce number of projects aimed at explaining/simulating the protocol for academics interested in the topic;
+
+\item The project will enable me to further explore my interest and in Information Security, an area of Computer Science that fascinates me. As a matter of fact, the main concept behind the core idea of a DC-Net is a simple mathematical operation called Exclusive OR (XOR, which will be explained later); there is a certain beauty that arises from the fact that applying a simple mathematical concept gives life to a protocol that guarantees unconditional security.
+
+\end{enumerate}
+
+
+\section{Project Scope}
+The project undertaken has the purpose of building a simulation tool in order to exemplify the functioning of the Dining Cryptographer protocol to those who would like to acquire a pragmatic understanding of it. 
+
+The ultimate aim is to build a software that is composed of the essential structure of the protocol, but that also extends the core concept with a proposal for practical use in the real world.
+
+\subsection{Target Audience}
+The intended audience of this project is academics and students interested in information security and more specifically in the workings of the DC-Net protocol. Despite the average user of the target audience is likely to be highly computer literate, the simulation tool has the goal to be an easy-to-use web application, in order to offer a friendly user-experience.
+
+\subsection{Contributions of my thesis}
+Undertaking the process of building a tool to translate the theoretical concept of a security protocol into a working implementation will allow me to appreciate the difficulties that arise in this process, both security wise and not. Therefore, I will be in a privileged position to bring these issues at the centre of the discussion to provide, where possible, solutions that also preserves untraceability.
+
+In addition, the early-stage research I conducted aimed at finding similar pieces of works, clearly showed an absence of practical implementations of a DC-Network simulator. And the only few available are not user-friendly. Hence, the main piece of work produced can be considered of real value for the target audience, to hopefully stimulate further works on the topic.
+
+\section{Solution Objectives}
+The software will be designed and implemented to reproduce a DC-Network. Its main objective is to be instructive for those people with little, but some, knowledge of the protocol. Therefore, the interface should be user-friendly and should give the user clear information about what is happening internally during the execution of each stage of the protocol. In this way, the user should find the application instructive in the process of deepening their knowledge of a DC-Net.
+
+The solution will consist of a web application, designed to ease its access and usage, by removing possible installation steps that a native application may have required. It will be a real-time application based on a client-server model, so that multiple clients can communicate instantaneously. By Chaum's description, which will be scrutinized closely in later sections, a minimum of three clients (or 'cryptographers') is necessary to provide anonymity. However, the goal of the software is to allow any number of clients to connect to the web server and execute the protocol.
+
+The server will have the main purpose to ease the implementation of the distributed system, and will play mostly the role of a rely to help the exchange of messages between clients. 
+Since this is a simulation has educational purposes, delay between the stages of the protocol will be intentionally added in the software, otherwise the computer speed would complete the protocol execution in a matter of milliseconds, preventing a possible user to understand the different stages that took place.
+
+
+\section{Report Structure}
+The following chapters will give a comprehensive and in depth examination of this protocol and its implementation. The content is divided as follows:
+
+Chapter 1, the current chapter, outlined the purpose and direction of the report.
+
+Chapter 2 introduces background and related work in terms of anonymity and untraceability, which serves as a foreword for the actual in-depth presentation of the DC-Net protocol. A complete proof of security of the protocol is provided, and lastly the current state of art of the DC-Net implementations is looked at.
+
+Chapter 3 explores the requirements, originated in line with the ultimate goals of the project of reproducing a working version of the protocol. Following, there is a presentation of how each of these requirements is going to be fulfilled. 
+
+Chapter 4 examines the design of the architecture from different perspectives by employing diagram notations (e.g. class diagram, data flow diagram). The graphical user interface is also presented here.
+
+Chapter 5 delves into the actual implementation achieved, describing in detail the technologies used, the challenges faced through development iterations, the programming design choices employed to guarantee the security and untraceability of the application, and the mapping between the feature implemented and the theoretical concepts of the protocol.
+
+Chapter 6 evaluates the work undertaken addressing the known limitations and suggestion future improvements that could be implemented, if more time was available.
+
+Lastly, Chapter 7 summarizes the overall project and draw the conclusion over the accomplished work.

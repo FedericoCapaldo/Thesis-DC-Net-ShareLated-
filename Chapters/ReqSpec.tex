@@ -1,0 +1,388 @@
+\chapter{Requirements and Specifications}
+
+Following a thorough examination of the internal functioning of the Dining Cryptographers protocol, this section focuses on describing in details the deliverables of the DC-Net simulation. 
+
+Firstly, the requirements to be achieved are presented. They are divided in basic requirements, the minimum requirements for an acceptable project, and advanced requirements, that instead address the more elaborated technical challenges of the protocol. The latter requirements are the DC-Net limitations and possible extensions presented in the literature review. Each of these two set of requirements, basic and advanced, will have a series of functional, non-functional, and security requirements. 
+
+Lastly, the specifications section will elucidate how each of the requirements is going to be implemented, introducing the selected technologies and/or the best chosen methods to achieve a successful implementation.
+
+\section{Brief}
+The simulation will be a real-time web-based application that not only resembles the dynamics of the Dining Cryptographers but it will also internally work as faithfully as possible to the original protocol in order to guarantee untraceability. A web application is regarded appropriate for a number of reasons:
+\begin{enumerate}
+    \item From a user perspective, downloading and installing the application and its third-party required components (dependencies) is likely to end up in technical issues. By using a website, the user can focus on learning the protocol rather than having to overcome possible set-up barriers that may arise;
+    \item Building a website entails creating a Graphical User Interface (GUI). This results in a more user-friendly experience in respect to a command line application, often the interface of choice for most of the DC-Net simulations available.
+    \item A deployed web application allows clients to connect to the DC-Net server over the internet. Such distributed architecture is a realistic implementation of the protocol. This represents another important step forward in respect to the many of the simulations currently available. In fact, as observed in section \ref{sec:similarWorks}, current simulations often employ scripts to emulate all the nodes on the same machine.
+\end{enumerate}
+
+The website will employ a client-server architecture. This design is considered appropriate for the simulation since it offers a father reach to build complex mechanisms for handling the advanced requirements. \newline
+
+\textbf{It is important to highlight once more that the software implemented is going to be a \emph{simulation}. The role of the server in the application is seen as a facilitator to exchange messages between clients. Therefore, addressing the trust issue mentioned in section \ref{sec:clientserver} is beyond the scope of this project.}
+
+
+\section{Requirements} \label{sec:requirements}
+The requirements section informally introduces what the software is going to accomplish to then list formally the goals that the simulation is expected to achieve.
+
+\subsection{Basic Requirements}
+The basic objectives encompass the necessary features to perform a single round of communication with the minimum number of three participants.
+
+\subsubsection{Informal description of the basic protocol at work}
+The scenario pictures a server listening to incoming connections. A new client reaches the simulation platform through his computer's browser. At each incoming connection, the server communicates to all participants the presence of a new user, and when the number of connected nodes is exactly three, the protocol is executed. Further incoming connections are rejected, as the basic protocol acknowledges only three clients. The execution of the protocol entails the following steps:
+\begin{enumerate}
+    \item The DC-Net Service (the server) generates adjacencies based on the list of connected clients.
+    \item The DC-Net Service will generate a secret key for each adjacency, and it will share it with the two clients that belongs to the adjacency over a secure channel;
+    \item A client will choose if they want to flip his response (i.e. send a message); once a client provides his answer, the XOR of his keys and answer will be computed and sent back to the server; this process happens for all clients (senders anonymity);
+    \item When the server will detect that all the responses have been received, the final result is computed by XORing all the responses. This is then broadcasted back to all users (recipient anonymity);
+\end{enumerate}
+
+After this last step, the simulation ends. If throughout the steps mentioned one of the users disconnects, the server halts the protocol execution immediately and this is communicated to the users still in the network. This happens because, as explored in the literature review, anonymity cannot be guaranteed with only two participants. This whole protocol is executed in real-time.
+
+The words nodes, users, participants, and clients are used interchangeably to identify the cryptographers at the dinner.
+
+From the above sequence of events the following sections of functional, non-functional and security requirements are obtained.
+
+\subsubsection{Functional Requirements}
+Functional requirements describe the actual features to be implemented:
+\begin{enumerate}
+    \item BFUN1 - Allow a user to connect to the DC-Net Service (the server);
+    \item BFUN2 - Enable real-time communication among clients and server;
+    \item BFUN3 - Inform connected participants when another client joins the network;
+    \item BFUN4 - Support exactly the connection of three clients to the DC-Net Service;
+    \item BFUN5 - Prompt server to start the protocol execution as soon as three clients are connected;
+    \item BFUN6 - Create adjacencies between each pair of neighbouring clients;
+    \item BFUN7 - Create a secret key for each adjacency and ensure both clients receive it;
+    \item BFUN8 - Allow a client to express their intention of sending a message/flipping their one-bit key;
+    \item BFUN9 - Implement the XOR function on the client-side to generate the round response to be sent to server;
+    \item BFUN10 - Implement the XOR function on the server-side to generate the final round result;
+    \item BFUN11 - Enable server to broadcast the final round result of the protocol execution to all clients;
+    \item BFUN12 - Provide help messages to the user to give additional information on the protocol execution;
+    \item BFUN13 - If less than three users are connected to the network, inform each participant how many nodes are currently in the network;
+\end{enumerate}
+
+\subsubsection{Non-Functional Requirements}
+Non-functional requirements are non-technical attributes of the system that are important for the usability of the software: 
+\begin{enumerate}
+    \item BNFUN1 - Enable the user to understand what is happening at each stage of the protocol with clear messages;
+    \item BNFUN2 - Support at least one modern browser;
+    \item BNFUN3 - Deploy the system online to allow remote connections like a real distributed application;
+    \item BNFUN4 - Distinguish clients between one another with unique names for usability;
+    \item BNFUN5 - Slow down the computer speed in the protocol execution in order to allow the user to understand what is happening in the simulation;
+\end{enumerate}
+
+\subsubsection{Security Requirements}
+As this is a security protocol it is important to clearly state the necessary security goals to be achieved in this separate section:
+\begin{enumerate}
+    \item BSEC1 - Implement the key generation process on the centralized DC-Net in a cryptographically secure manner;
+    \item BSEC2 - Implement the key exchange over a secure communication channel;
+    \item BSEC3 - Abort communication if less than three participants are present;
+    \item BSEC4 - Ensure that cryptographers respond to the server with a message that is the XOR of its keys and his message, rather than the message in plain text (so as to enforce sender anonymity);
+    \item BSEC5 - Ensure that server employs broadcast/multicast events as often as possible. If unicast messages are used, guarantee that untraceability is not compromised;
+\end{enumerate}
+
+\subsection{Advanced Requirements}
+The advanced requirements address the issues of the basic protocol that, unless tackled, do not sanction the DC-Net with the level of utility needed for a real-world usage. Namely, these advanced features are message collision detection, multiple-bit keys and consecutive communication rounds, and an arbitrary number of participants in the network.
+
+
+\subsubsection{Informal description of the advanced protocol at work}
+\noindent The final version of the simulation, the advanced protocol, works in a more complex manner. 
+
+Firstly, the protocol can be executed with any number of clients in the network, as long as the minimum number of three clients is present. Since at the beginning of a round the generation of adjacencies and their respective keys takes place, a client that connects to the website while the protocol is being executed, will have to wait the end of the current round before participating in the communication. Conversely, if a client disconnects during the protocol execution but at least three other participants are still connected, the system will be resilient enough to complete the round. The key-sharing graph topology employed to support an arbitrary number of clients will be a ring topology (section \ref{sec:ringtopology}). \newline
+
+Secondly, the simulation does not end after the execution of a single round, but it keeps repeating itself as long as three participants are connected. In addition, 8-bit keys are used, so that a client that wishes to send a message, can XOR his two secret keys with an a number in the range 0-255, instead of a 0 or 1 that a 1-bit key permits (see section \ref{sec:longerKeys}). The reason for choosing this key length is to send meaningful human-readable messages by using ASCII encoding. Therefore, a client that in a 1-bit key round would like to flip his message can now send a number in the range 0-255 that will be converted into its corresponding ASCII character. For example, a client wishing to send the character 'a' as his message will XOR his two secret 8-bit keys with the number 97, which is the ASCII-encoded representation of the letter 'a'. Therefore, it is possible transmit actual sentences by repeating rounds with 8-bit keys. \newline
+
+Thirdly, it would not be enough to allow users to send meaningful messages (numbers that correspond to ASCII characters), if there was no way to detect collisions. To expose collisions in a single round, the server will now store the keys that are generated for each client in each round. Since a client that does not want to send a message will XOR only his secret keys, the server now can compare the received value with the XOR of the stored key of that client to establish if that user sent a message. The first client to do so will have his message accepted, while all the other clients that will also try to send a message in the same round will be notified that their messages have been rejected. The notification will only be sent after all clients have issued their response. This will avoid a scenario in which the first client to respond to the server sends a message, and the second client to respond also provides a message, but by receiving a rejection notification immediately, the sender would be revealed to a potential eavesdropper of the network. If all clients try to send a message in the same round, even if the notifications of rejection are provided after all clients have issued their response, only the message sender will not receive a rejection notification, and therefore the sender will be again revealed to an eavesdropper. Hence, if all clients try to send a message in the same round, communication is aborted.
+
+To expose collisions across multiple rounds, hence when a client tries to send a sentence one character per round, the proposed method is not enough. To achieve that level of collision detection, the communication will be divided into different types of rounds:
+\begin{enumerate}
+    \item voting round: single round in which users that would like to send a message will try to win the right to do so. Only one client can win a voting round, who becomes the message sender;
+    \item length-calculation round: single round in which the message sender will provide the message he wants to share anonymously. The broadcasted result of this round is only length of the message, which will allow the DC-Net service to generate and share a number of secret keys to each adjacency equivalent to the length of the message. The secret keys of the length-calculation message will be in the range of 100-999. The reason to do so is that if a all generated secret keys would be a number close to 0 the message sender that will try to XOR his keys with a length of message greater than the keys values will be immediately exposed since his response to the server would be the highest value communicated from a client to the server;
+    \item communication rounds: as many rounds as the message length happen in which only the message sender is allowed to anonymously XOR a character with his keys. The result of this phase will be an anonymous broadcast of a whole sentence to the whole network.
+\end{enumerate}
+These three phases will rerun in the same order continuously, and the message sender will not be allowed to win the following voting round, so as to prevent a user to hog the channel of communication.
+
+\subsubsection{Functional Requirements}
+\begin{enumerate}
+    \item AFUN1 - Support an arbitrary number of participants in the network (instead of just three);
+    \item AFUN2 - Repeat rounds of communication continuously;
+    \item AFUN3 - Implement 8-bit keys to exchange longer messages (key range 0-255);
+    \item AFUN4 - Detect multiple senders in the same round to avoid message collisions;
+    \item AFUN5 - Divide communication into three types of rounds: voting, length-calculation, communication rounds to be implemented in this order (explained in the design section \ref{sec:designLongMessages});
+    \item AFUN6 - Reject clients that did not win the voting round to avoid message collisions in communication rounds;
+    \item AFUN7 - Allow user that won the voting round (i.e. message sender) three attempts to provide their own text message in the length calculation round;
+    \item AFUN8 - Enable the DC-Net server to create a number of secret keys in bulk, to be shared with the clients before the communication rounds start;
+    \item AFUN9 - Convert each letter of the message provided by the message sender client into the corresponding ASCII characters;
+    \item AFUN10 - At the termination of communication rounds, display the aggregate message that the user received;
+    \item AFUN11 - Prevent the message sender to win the next voting round, so as to ensure a degree of fairness in the network usage;
+    \item AFUN12 - Handle all cases of user connection and disconnection during the execution of the protocol so as to avoid unexpected values from the server's XOR calculations for the round results;
+\end{enumerate}
+
+\subsubsection{Non-functional Requirements}
+\begin{enumerate}
+    \item ANFUN1 - Increase user-friendliness with some front-end functionalities that empower the user in his learning experience;
+    \item ANFUN2 - Allow longer and different types of time intervals between the various stages of communication to ensure that the simulation is understandable;
+\end{enumerate}
+
+\subsubsection{Security Requirements}
+In addition to the basic security requirements. The following will also be necessary:
+\begin{enumerate}
+    \item ASEC1 - Abort communication when the message sender disconnects from the network;
+    \item ASEC2 - Abort communication if all participants try to send a message in the same round;
+    \item ASEC3 - Keep track of participants secret keys on the DC-Net server in order to detect collisions throughout the upcoming communication rounds;
+    \item ASEC4 - Synchronize clients' responses for the length-calculation round to avoid the uncovering of the message sender;
+    \item ASEC5 - Implement a three-digit key range (100-999) for the length calculation round to ensure hiding of message length (otherwise message sender would be easily spotted if all generated keys were close to 0 and shorter than the message length).
+\end{enumerate}
+
+
+\section{Specifications}
+This sections draws upon the listed requirements to delve deeper into \emph{how} they will be implemented.
+
+
+\subsection{Description of Basic Requirements}
+
+\begin{longtable}[c]{| c | p{4cm} | p{6cm} |}
+\caption{Basic Functional Requirements Specifications \label{table:bfun}}
+
+\hline
+\multicolumn{3}{| c |}{Begin of Table}\\
+\hline
+\textbf{Req. Code} & \textbf{Requirement} & \textbf{Specification (how will it be achieved)}\\
+\hline
+\endfirsthead
+
+\hline
+\multicolumn{3}{|c|}{Continuation of Table \ref{table:bfun}}\\
+\hline
+\textbf{Req. Code} & \textbf{Requirement} & \textbf{Specification (how will it be achieved)}\\
+\hline
+\endhead
+
+\hline
+\endfoot
+
+\hline
+\multicolumn{3}{| c |}{End of Table}\\
+\hline\hline
+
+
+\endlastfoot
+BFUN1 & Allow a user to connect to the DC-Net Service (the server); & Implement a client-server architecture with node.js and express.js to serve static files.\\ 
+\hline
+BFUN2 & Enable real-time communication among clients and server; & Implemented socket.io real-time event-based library to handle communication between clients/server and client.\\
+\hline
+BFUN3 & Inform connected participants when another client joins the network; & When a connection event happens broadcast to all participants a socket.io 'connection' event, and display the name of the newly connected participant.\\
+\hline
+BFUN4 & Support exactly the connection of three clients to the DC-Net Service; & Employ control flow so as not to start communication unless there are three active connections; and block further incoming connections.\\
+\hline
+BFUN5 & Prompt server to start the protocol execution as soon as three clients are connected; & Employ control flow to start communication as soon as three participant are presented, by firing a 'start-round' event from the DC-Net service.\\
+\hline
+BFUN6 & Create adjacencies between each pair of neighbouring clients; & At the time of a new client addition to the network, renew adjacencies. Employ a list of Adjacency objects to keep track of all neighbouring nodes.\\
+\hline
+BFUN7 & Create a secret key for each adjacency and ensure both clients receive it; & Implement a random key generator in order to create a common key (either a 0 or a 1).\\
+\hline
+BFUN8 & Allow a client to express their intention of sending a message/flipping their one-bit key; & Implement a pop-up that explicitly asks the client if they would like to send a message.\\
+\hline
+BFUN9 & Implement the XOR function on the client-side to generate the round response to be sent to server; & Implement function that XORs the keys of the current round with client's response ('Yes' equates to 1, 'No' equates to 0).\\
+\hline
+BFUN10 & Implement the XOR function on the server-side to generate the final round result; & Equip server with ability of keeping track of client's result as they are sent to the server. When all clients have expressed their response, automatically computer their XOR.\\
+\hline
+BFUN11 & Enable server to broadcast the final round result of the protocol execution to all clients; & Immediately after computing the round's result, allow server to broadcast the real message.\\
+\hline
+BFUN12 & Provide help messages to the user to give additional information on the protocol execution; & Implement question mark icons next to the relevant message parts. Display a detailed message when hovering on the icon.\\
+\hline
+BFUN13 & If less than three users are connected to the network, inform each participant how many nodes are currently in the network; & At each connection update the number of nodes needed to start connection, so that a user has a hint of why the communication rounds may have not started.\\
+\end{longtable}
+
+
+
+\begin{longtable}[c]{| c | p{4cm} | p{6cm} |}
+\caption{Basic Non-Functional Requirements Specifications \label{table:bnfun}}
+
+\hline
+\multicolumn{3}{| c |}{Begin of Table}\\
+\hline
+\textbf{Req. Code} & \textbf{Requirement} & \textbf{Specification (how will it be achieved)}\\
+\hline
+\endfirsthead
+
+\hline
+\multicolumn{3}{|c|}{Continuation of Table \ref{table:bnfun}}\\
+\hline
+\textbf{Req. Code} & \textbf{Requirement} & \textbf{Specification (how will it be achieved)}\\
+\hline
+\endhead
+
+\hline
+\endfoot
+
+\hline
+\multicolumn{3}{| c |}{End of Table}\\
+\hline\hline
+
+    
+\endlastfoot
+BNFUN1 & Enable the user to understand what is happening at each stage of the protocol with clear messages; & Instead of executing the protocol just in code, implement user messages on the GUI in order to inform users which stage of the protocol is happening.\\
+\hline
+BNFUN2 & Support at least one modern browser; & Support Google Chrome as it is the most widely used browser.\\
+\hline
+BNFUN3 & Deploy the system online to allow remote connections like a real distributed application; & Employ Heorku or AWS hosting services to make the simulation available to the public.\\
+\hline
+BNFUN4 & Distinguish clients between one another with unique names for usability; & Employ a library for random name generation.\\
+\hline
+BNFUN5 & Slow down the computer speed in the protocol execution in order to allow the user to understand what is happening in the simulation; & Implement a series of JavaScript timeouts and intervals in order to delay the main steps of the protocol.\\
+\end{longtable}
+
+
+\begin{longtable}[c]{| c | p{4cm} | p{6cm} |}
+\caption{Basic Security Requirements Specifications \label{table:bsec}}
+
+\hline
+\multicolumn{3}{| c |}{Begin of Table}\\
+\hline
+\textbf{Req. Code} & \textbf{Requirement} & \textbf{Specification (how will it be achieved)}\\
+\hline
+\endfirsthead
+
+\hline
+\multicolumn{3}{|c|}{Continuation of Table \ref{table:bsec}}\\
+\hline
+\textbf{Req. Code} & \textbf{Requirement} & \textbf{Specification (how will it be achieved)}\\
+\hline
+\endhead
+
+\hline
+\endfoot
+
+\hline
+\multicolumn{3}{| c |}{End of Table}\\
+\hline\hline
+
+\endlastfoot
+BSEC1 & Implement the key generation process on the centralized DC-Net in a cryptographically secure manner; & Implement a random generator that is cryptographically secure. Main options are node.js basic package \textit{crypto} or the npm library \textit{csprng}\\
+\hline
+BSEC2 & Implement the key exchange over a secure communication channel; & As this is a web application, the only proper manner to secure the channel is to implement a \textit{SSL} (Secure Socket Layer) connection and to reject any \textit{http} (plain text) request.\\
+\hline
+BSEC3 & Abort communication if less than three participants are present; & Implement special broadcast event that resets keys and other information on the clients' browser in order to stop the connection immediately. Use such event when, on a client disconnection event, there are less than three active connections.\\
+\hline
+BSEC4 & Ensure that cryptographers respond to the server with a message that is the XOR of its keys and his message, rather than the message in plain text (so as to enforce sender anonymity); & Ensure that socket.io events transmit data that is not in 'plain' text.  Hence, transmit messages on which XOR has been applied. \\
+\hline
+BSEC5 & Ensure that server employs broadcast/multicast events as often as possible. If unicast messages are used, guarantee that untraceability is not compromised; & Employ broadcast events as much as possible, use unicast events only when it does not compromise the untraceability of the message sender.\\
+\end{longtable}
+
+\subsection{Description of Advanced Requirement}
+\begin{longtable}[c]{| c | p{4cm} | p{6cm} |}
+\caption{Advanced Functional Requirements Specifications \label{table:afun}}
+
+\hline
+\multicolumn{3}{| c |}{Begin of Table}\\
+\hline
+\textbf{Req. Code} & \textbf{Requirement} & \textbf{Specification (how will it be achieved)}\\
+\hline
+\endfirsthead
+
+\hline
+\multicolumn{3}{|c|}{Continuation of Table \ref{table:afun}}\\
+\hline
+\textbf{Req. Code} & \textbf{Requirement} & \textbf{Specification (how will it be achieved)}\\
+\hline
+\endhead
+
+\hline
+\endfoot
+
+\hline
+\multicolumn{3}{| c |}{End of Table}\\
+\hline\hline
+
+\endlastfoot
+AFUN1 & Support an arbitrary number of participants in the network (instead of just three); & .\\ 
+\hline
+AFUN2 & Repeat rounds of communication continuously; & .\\
+\hline
+AFUN3 & Implement 8-bit keys to exchange longer messages (key range 0-255); & .\\
+\hline
+AFUN4 & Detect multiple senders in the same round to avoid message collisions; & .\\
+\hline
+AFUN5 & Divide communication into three types of rounds: voting, length-calculation, communication rounds to be implemented in this order; & .\\
+\hline
+AFUN6 & Reject clients that did not win the voting round to avoid message collisions in communication rounds; & .\\
+\hline
+AFUN7 & Allow user that won the voting round (i.e. message sender) three attempts to provide their own text message in the length calculation round; & .\\
+\hline
+AFUN8 & Enable the DC-Net server to create a number of secret keys in bulk, to be shared with the clients before the communication rounds start; & .\\
+\hline
+AFUN9 & Convert each letter of the message provided by the message sender client into the corresponding ASCII characters; & .\\
+\hline
+AFUN10 & At the termination of communication rounds, display the aggregate message that the user received; & .\\
+\hline
+AFUN11 & Prevent the message sender to win the next voting round, so as to ensure a degree of fairness in the network usage; & .\\
+\hline
+AFUN12 & Handle all cases of user connection and disconnection during the execution of the protocol so as to avoid unexpected values from the server's XOR calculations for the round results; & . \\
+\end{longtable}
+
+
+
+\begin{longtable}[c]{| c | p{4cm} | p{6cm} |}
+\caption{Advanced Non-Functional Requirements Specifications \label{table:anfun}}
+
+\hline
+\multicolumn{3}{| c |}{Begin of Table}\\
+\hline
+\textbf{Req. Code} & \textbf{Requirement} & \textbf{Specification (how will it be achieved)}\\
+\hline
+\endfirsthead
+
+\hline
+\multicolumn{3}{|c|}{Continuation of Table \ref{table:anfun}}\\
+\hline
+\textbf{Req. Code} & \textbf{Requirement} & \textbf{Specification (how will it be achieved)}\\
+\hline
+\endhead
+
+\hline
+\endfoot
+
+\hline
+\multicolumn{3}{| c |}{End of Table}\\
+\hline\hline
+    
+\endlastfoot
+ANFUN1 & Increase user-friendliness with some front-end functionalities that empower the user in his learning experience; & .\\
+\hline
+ANFUN2 & Allow longer and different types of time intervals between the various stages of communication to ensure that the simulation is understandable; & .\\
+\end{longtable}
+
+
+\begin{longtable}[c]{| c | p{4cm} | p{6cm} |}
+\caption{Advanced  Security Requirements Specifications \label{table:asec}}
+
+\hline
+\multicolumn{3}{| c |}{Begin of Table}\\
+\hline
+\textbf{Req. Code} & \textbf{Requirement} & \textbf{Specification (how will it be achieved)}\\
+\hline
+\endfirsthead
+
+\hline
+\multicolumn{3}{|c|}{Continuation of Table \ref{table:asec}}\\
+\hline
+\textbf{Req. Code} & \textbf{Requirement} & \textbf{Specification (how will it be achieved)}\\
+\hline
+\endhead
+
+\hline
+\endfoot
+
+\hline
+\multicolumn{3}{| c |}{End of Table}\\
+\hline\hline
+
+\endlastfoot
+ASEC1 & Abort communication when the message sender disconnects from the network; & .\\
+\hline
+ASEC2 & Abort communication if all participants try to send a message in the same round; & .\\
+\hline
+ASEC3 & Keep track of participants secret keys on the DC-Net server in order to detect collisions throughout the upcoming communication rounds; & . \\
+\hline
+ASEC4 & Synchronize clients' responses for the length-calculation round to avoid the uncovering of the message sender; & .\\
+\hline
+ASEC5 & Implement a three-digit key range (100-999) for the length calculation round to ensure hiding of message length (otherwise message sender would be easily spotted if all generated keys were close to 0 and shorter than the message length); & .\\
+\end{longtable}

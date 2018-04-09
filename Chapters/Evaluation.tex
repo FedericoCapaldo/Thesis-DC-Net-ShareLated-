@@ -1,0 +1,63 @@
+\chapter{Evaluation}
+This chapter is a reflection on the implemented software to present its strength, to assess its contribution to academia,  and weaknesses, to identify possible areas of improvement. 
+
+\section{Assessment on the simulation implemented}
+The simulation implemented met all the basic requirements and advanced requirements outlined in section \ref{sec:requirements}. This implies a satisfactory implementation of a DC-Net simulation was achieved because not only the software performs the core multi-party XOR computation of three entities, but it also acknowledges different limitations and proposes some additions that improve the real-world utility of the protocol. Namely, message collisions are detected; the communication is broken down in different types of rounds (voting, length calculation and communication) so as to send longer messages; a proposal to use ASCII encoding of the letters is made so as to communicate actual human-readable messages; and any number of participants can join or leave the network during the protocol execution without affecting the correctness of the message exchanged. Furthermore, all of this happens with a real distributed architecture and using a graphical user interface.
+
+
+\section{Comparison of simulation with other works}
+In comparison with other implementations found available online, the simulation tool implemented provides a number of noticeable improvements to the current state of art of Dining Cryptographer simulated implementations. In particular:
+\begin{enumerate}
+    \item \textbf{Set-up}: while current tools hinder the user from their usage due difficult set-up, the user experience provided by this simulation tool is simplified by not requiring installation of any software since it is readily available online;
+    \item \textbf{User interface}: current tools mostly offer a command-line experience, which requires the user to \textit{memorise} verbose commands to receive an output from the system. The user experience provided is enhanced with a GUI, which instead requires the user to simply \textit{recognize} visual cues like buttons and colors. Plus, the simulation is equipped with a number of descriptive messages of what is happening during the execution of the protocol;
+    \item \textbf{Documentation}: The command line tools available have a learning curve that requires documentation which is also rarely satisfactory, the simulation implemented does not have considerable barriers that may leave the user puzzled on what to do next, and it also have an explicative visual user guide;
+    \item \textbf{Distributed architecture}: all tools found do not offer the capability to simulate a real-world scenario with multiple users connecting from their machines, as these software run locally on a single machine. The simulation implemented offer a realistic experience through the website implemented that allows users in different physical location to connect to the server.
+\end{enumerate}
+
+On the whole, this number of improvements move the current state of art forward and enables cryptography enthusiasts learn in a practical way the potential of this protocol.
+
+\section{Known limitations of the implemented solution}
+Despite the advancements achieved, there is a number of known limitations to be acknowledged. 
+
+\subsection{Key Exchange}
+Since the software has been developed as a web application, the standard effective way to secure a line of communication on the Internet is to employ a Socket Secure Layer (SSL). This provides a solution to exchange keys securely, however it does not address the problem of key exchange at a protocol level. Therefore, if this simulation was to be implemented as a desktop application the problem of key-exchange would have to be addressed in another way such as one of the techniques listed in section \ref{sec:keyExchangeMethods}.
+
+\subsection{Presence of Server}
+Making use of a client-server architecture introduces the presence of the server which presents the DC-Net Service. This raises the issue of trusting that the server, or who manages it, does not misuse his comprehensive view of the network as discussed in section \ref{sec:clientserver}. Again, since this is a web application the use of an SSL verifies the server's identify through its certificate but a client using the this platform cannot know how the server handles the responses sent to it. The client-server architecture was chosen putting emphasis on the fact that this is a simulation. Specifically, it was selected because the presence of a centralised service allows the implementation of some advanced features. For example, it would not be possible to detect collisions without an entity that is able to see all the messages in a round. Therefore, there is a design choice between the presence of an omniscient principal, the server, that increases the utility of the protocol and the choice of a serverless architecture, as described in \cite{Scholz}, with more limited capabilities.
+
+
+\subsection{Anonymity Reduction due to collision detection warnings}
+In the final implementation, which also includes the advanced requirements, the communication is divided in three types of round (voting, length calculation, communication rounds). During the voting round each participant can express his intention to send a message. If the client sends a positive answer to the server, he locally self-declares himself message sender for that round, and he is considered to be it unless the server will send a message rejection notification. This mechanism is employed so as to instead avoid sending a unicast notification to the user that won the voting round that he is the message sender, which would make him directly identifiable by an eavesdropper. However, it is assumed that an eavesdropped can even intercept these notifications of message rejection. Hence, an external observer that listen in all messages can deduct that the clients that received this notification are not the real sender during this round. Therefore, the anonymity set is reduced to those participants that have not received such notification.
+
+The reality is that there is no easy solution to avoid this reduction in the degree of anonymity. Even in the scenario in which the user-experience would not be a priority and the responses to the server of those clients that attempted to win the voting round are simply dropped and there is no warning message of rejection sent to the client, there needs to be an update of state sent to them in order to change their self-declared belief of being senders.
+
+\subsection{Edge case of anonymity impairment due to collision detection warning}
+As mentioned in section \ref{sec:internalExternalAnon}, the minimum number of participant needed to guarantee both external and internal untraceability is three. With only two participants anonymity can guaranteed only in respect to an external observer. However, due to the needed feature of message rejection in the voting round, there exist an edge case in which an internal eavesdropper can impair the internal untraceability of the network. Namely, if there are three cryptographers only executing a round of communication, in which there is:
+\begin{enumerate}
+    \item a message sender who won the voting round;
+    \item a second participant that tried to win the voting round;
+    \item the internal eavesdropped that can listen in to all communication from and to the server.
+\end{enumerate}
+It follows that since there are only two other clients, one of which is sending a message and one client that received a rejection notification, then the client that did not receive this notification is the message sender.
+
+\subsection{Collusion}
+
+
+\section{Future Works}
+
+\subsection{Server Trust Issue}
+how? ssl for authentication
+
+\subsection{Secure Key-Exchange at protocol level}
+Diffie-Hellman
+
+\subsection{Detect Collusion}
+Fail-Stop key Generation
+
+\subsection{Improve UI}
+
+
+\section{Disparity between Protocol Perfection and Real World Implementation}
+
+
+
