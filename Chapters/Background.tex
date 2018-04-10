@@ -104,7 +104,7 @@ Three cryptographers decide to dine at a restaurant. At the end of the meal, the
 
 To sum up, if one of the three cryptographers at the table paid for the meal, neither of the two non-paying cryptographers would gain any additional information about who, between the two other participants other than himself, might be the payer. This is because each participant does not know the outcome of the third coin flip between the other two participants.  Such is the explanation of how sender anonymity is guaranteed in the Dining Cryptographers protocol. 
 
-Importantly, Chaum also proves how sender anonymity within this protocol is unconditionally secure in theory. This property of the protocol makes it fascinating as it means that untraceability holds in all possible scenarios within the network.  We turn now to present how this is the case. 
+Importantly, Chaum also proves how sender anonymity within this protocol is unconditionally secure in theory \cite{Chaum}. This property of the protocol makes it fascinating as it means that untraceability holds in all possible scenarios within the network.  We turn now to present how this is the case. 
 
 
 \subsection{Proving Unconditional Security}
@@ -146,16 +146,17 @@ In order to understand why the Dining Cryptographer problem provides such proper
 \end{enumerate}
 
 
-The minimum number of participants required to carry out this protocol is, therefore, three. If only two participants were present, sender anonymity would be guaranteed only in respect to an external observer of the network but not internally. \newline. Since the coin is unbiased, both head or tail have a 50{\%} likelihood of being the result. A non-payer cryptographer can therefore only guess the outcome of the hidden coin. Consequently, Chaum's protocol is unconditionally secure. \label{sec:internalExternalAnon}
-
+As demonstrated in the scenarios above, the minimum number of participants required to carry out this protocol is three. If only two participants were present, sender anonymity would be guaranteed only in respect to an external observer of the network but not internally. Moreover, since the coin is unbiased, both head or tail have a 50{\%} likelihood of being the result. With such probability, a non-payer cryptographer can only guess the outcome of the hidden coin. Therefore, Chaum's protocol is unconditionally secure. \label{sec:internalExternalAnon}
 
 
 
 \subsection{A Formal Exposition of the Protocol}
-The analogy above have the purpose to facilitate the more formal exposition of the DC-Net protocol that is presented in the next section.
+The analogy above has the purpose of facilitating the more formal exposition of the DC-Net protocol, which we present below. 
 
-The Dining Cryptographers can be represented in graph theory, where each cryptographer is a vertex and each key exchange between two cryptographers is an edge, so far referred to as coin flip. The basic version of the protocol uses one-bit keys, therefore only two values are possible. From the metaphor of the coin, the head corresponds to a 1 and a tail is a 0 or vice versa.
-The action of 'paying the dinner' corresponds to a participant, ergo a vertex, reversing his outcome before the broadcast. The action of 'announcing the result out loud' is a message broadcast in the network. Lastly, each anonymous dinner payment is equivalent to a round of communication in which a node may broadcast a message.
+The Dining Cryptographers can be represented in graph theory, where each cryptographer is shown as a vertex. The flip coin presented in the analogy corresponds to a key exchange in a formal protocol. This key exchange is represented as an edge between two vertices, i.e. cryptographers. 
+
+The basic version of the protocol uses one-bit keys. Therefore, only two values are possible, since a single bit can either be a 1 or a 0. From the metaphor of the coin, the head corresponds to a 1 and a tail is a 0 or vice versa.
+The action of 'paying the dinner' corresponds to a participant, ergo a vertex, reversing his outcome before the broadcast. The action of 'announcing the result out loud' is a message broadcasted in the network. Lastly, each anonymous dinner payment is equivalent to a round of communication in which a node may broadcast a message.
 
 \subsubsection{Exclusive OR (XOR)}
 The operations executed by each cryptographer in stage 2 (see section \ref{sec:protocolStages}) to combine the results of different key-exchanges is done through the utilization of a logic operation called \textit{exclusive disjunction} or \textit{XOR}. The logical operation outputs true only if the the input values are different (table \ref{table:XOR}). The symbol of this operation is "$\oplus$".
@@ -177,7 +178,7 @@ The operations executed by each cryptographer in stage 2 (see section \ref{sec:p
 \label{table:XOR}
 \end{table}
 
-The XOR operation is also executed to combine the result of each vertex at the third stage of the protocol, where at least three bits are present - one for each cryptographer in the network (see section \ref{sec:protocolStages}). In this case, the overall operation can be seen as a cascade of XOR operations between two input at a time (table \ref{table:XORextended}).
+The XOR operation is also executed to combine the result of each vertex, i.e. cryptographer, at the third stage of the protocol, where at least three bits are present - one for each cryptographer in the network (see section \ref{sec:protocolStages}). In this case, the overall operation can be seen as a cascade of XOR operations between two input at a time (table \ref{table:XORextended}).
 
 
 \begin{table}[h!]
@@ -201,7 +202,7 @@ The XOR operation is also executed to combine the result of each vertex at the t
 \label{table:XORextended}
 \end{table}
 
-The following are the properties of the XOR operation that are also very relevant for DC-Net problem \cite{Lewin}: 
+The mathematical properties of the XOR operation are also very relevant for DC-Net problem \cite{Lewin} and are four:
 \begin{enumerate} \label{sec:XORproperties} \label{sec:xorproperties}
     \item \textit{Commutative:} It does not matter the order of the inputs. $A \oplus B = B \oplus A$
     \item \textit{Associative:} XOR operation can be chained in any order $A \oplus (B \oplus C) = (A \oplus B) \oplus C$
@@ -210,17 +211,17 @@ The following are the properties of the XOR operation that are also very relevan
 \end{enumerate}
 
 \subsubsection{Exchange of one-bit messages with \textit{3} participants}
-The following is the scenario and procedure of the protocol executed with the minimum number of three participants and expressed with a more formal notation:
+The following is the scenario and procedure of the protocol executed with the minimum number of three participants and expressed with a more formal notation (examples in figure \ref{fig:dcFormalnoMessage} and \ref{fig:dcFormalWithMessage}) :
 \begin{enumerate}
     \item There are 3 vertices \textit{$P_1, P_2, P_3$};
     \item Each vertex is part of two adjacencies, one for each neighbour. For example, vertex \textit{$P_1$} is part belongs to \textit{$N(P_1,P_2)$} and \textit{$N(P_1, P_3)$};
     \item Each adjacency is also an edge that represents a key. \textit{$P_1$} will have edges \textit{$K_{1,2}$} and \textit{$K_{1,3}$};
     \item Each vertex will calculate the value to be broadcasted. In the example of \textit{$P_1$}: 
     \begin{enumerate}
-        \item If he does not want to send a message \textit{$M_1 = K_{1,2} \oplus K_{1,3} \oplus 0 $}. This is equivalent to \textit{$M_1 = K_{1,2} \oplus K_{1,3}$};
-        \item If he wants to send a message \textit{$M_1 = K_{1,2} \oplus K_{1,3} \oplus 1 $}. This is equivalent to \textit{$M_1 = \neg(K_{1,2} \oplus K_{1,3}) $};
+        \item If P1 does not want to send a message ($M_1$), \textit{$M_1 = K_{1,2} \oplus K_{1,3} \oplus 0 $}. This is equivalent to \textit{$M_1 = K_{1,2} \oplus K_{1,3}$};
+        \item If P1 wants to send a message ($M_1$) \textit{$M_1 = K_{1,2} \oplus K_{1,3} \oplus 1 $}. This is equivalent to \textit{$M_1 = \neg(K_{1,2} \oplus K_{1,3}) $};
     \end{enumerate}
-    \item The final round result will be calculated by XORing all the results such that \textit{$R = M_1 \oplus M_2 \oplus M_3$} (Examples in figure \ref{fig:dcFormalnoMessage} and \ref{fig:dcFormalWithMessage}) .
+    \item The final round result (R) will be calculated by XORing all the results such that \textit{$R = M_1 \oplus M_2 \oplus M_3$}.
 \end{enumerate}
 
 
@@ -241,17 +242,21 @@ The following is the scenario and procedure of the protocol executed with the mi
 From now on, the dinner analogy language and the formal graph notation will be used interchangeably. \newline \newline \newline
 
 \section{Limitations}
-As mentioned multiple times, the Dining Cryptographer is a very effective protocol to guarantee sender anonymity in \textit{theory}. In actuality, there are some limitation to take in consideration.
+As already mentioned, the Dining Cryptographer is a very effective protocol to guarantee sender anonymity in \textit{theory}. In reality, there are three main limitations, which show the weaknesses of this protocol: message collision, communication disruption and overhead. 
 
 \subsection{Collisions}
 So far, one of the assumptions to verify the correctness and efficacy of the protocol was that only one vertex, or cryptographer, broadcasts a message per round. However, it is possible and likely that multiple vertices will try to send a message (i.e. a reversed response) in the same round, which will lead to a collision. The consequence is that if an even number cryptographers sends a message in the same round, the final result will be 0, which equates to 'no one has flipped their message'. If an odd number of cryptographers sends a message in the same round, the final result will be 1, which corresponds to just one cryptographer having sent a message.
 
-\subsection{Disruption} \label{sec:disruptionlimitation}
-The protocol is secure in respect to a passive attacker, an eavesdropper. However, a participant of the network that is also an active attacker could inject falsified responses instead of following the protocol rules, and this disrupts the execution of the protocol. 
+\subsection{Disruption and Collusion} \label{sec:disruptionlimitation}
+A passive attacker is a principal that can only intercepts messages being exchanged, eavesdropper. An active attacker, instead, performs malicious actions such as sending manipulated messages himself.
 
-Another possible hindrance is an attacker that delays his responses each round, keeping the other participants waiting \cite{Fischer}.
+The protocol is secure in respect to an eavesdropper. However, a cryptographer inside the network that is active attacker could inject falsified responses instead of following the protocol rules, and this disrupts the execution of the protocol unless these forged messages are somehow detected. 
 
-In addition, if a number of participants in the network collaborates in order to identify who sent a message, anonymity may be impaired. This is called collusion. The ability of colluding also depends on the architecture implemented (see section \ref{sec:participantsextention}).
+Another possible hindrance is an attacker that simply delays his responses each round, keeping the other participants waiting \cite{Fischer}.
+
+In addition, another threat is collusion: a number of attackers in the network can collaborate in order to uncover the real sender of a message by pooling together their keys \cite{Chaum}. A simple example consists in a network of three participants where a cryptographer comes to know the value of the third hidden coin through the key pooling with one of his neighbours. In such case, the said malicious cryptographer can establish who sender is, if any is present. The simplicity of colluding also depends on the architecture implemented (see section \ref{sec:participantsextention}). This type of collaboration is mentioned by Chaum as an issue, but it is addressed in more depth by other academic papers that specifically focus on this matter, such as the work of Waidner \cite{Waidner}.
+
+
 
 \subsection{Communication Overhead} \label{sec:complexitylimitation}
 The unconditional security of this protocol comes at a cost. Depending on the architecture implemented, there are several messages to be sent in order to hide the real sender. Each client is part of two messages per round of communication: one message sent as part of the sender anonymity set and one message is received as part of the recipient anonymity set.
@@ -269,7 +274,7 @@ The operating cost is likely to be the main reasons why such powerful protocol i
 The protocol presented allows only for one-bit messages exchanged among three participants. Both these characteristics, message length and number of participants, can be adjusted in order to increase the utility of the protocol. 
 
 \subsection{Increase number of participants} \label{sec:participantsextention}
-From the minimum number of three, the basic protocol can be generalized with two possible different topologies so as to accommodate \textit{n} participants. 
+From the minimum number of three, the basic protocol can be generalized with two possible different topologies so as to accommodate \textit{n} participants.
 
 \subsubsection{Ring Topology} \label{sec:ringtopology}
 The first method to extend the protocol to multiple payers is very similar to the one presented up to this point. Each vertex will have only two edges, one with each neighbour, and the protocol follows the same rules, as showed in figure \ref{fig:nparticipants1}.
@@ -283,7 +288,7 @@ More formally speaking:
         \item If the node does not want to send a message \textit{$M_i = K_{i,i-1} \oplus K_{i,i+1} \oplus 0 $}. This is equivalent to \textit{$M = K_{i,i-1} \oplus K_{i,i+1}$};
         \item If the node wants to send a message \textit{$M_i = K_{i,i-1} \oplus K_{i,i+1} \oplus 1 $}. This is equivalent to \textit{$M_i = \neg(K_{i,i-1} \oplus K_{i,i+1}) $};
     \end{enumerate}
-    \item The final round result will be calculated by XORing all the results such that \textit{$R = M_1 \oplus M_2 \oplus ... \oplus M_n$} (Example in figure \ref{fig:nparticipants1}).
+    \item The final round result will be calculated by XORing all the results such that \textit{$R = M_1 \oplus M_2 \oplus ... \oplus M_n$} (example in figure \ref{fig:nparticipants1}).
 \end{enumerate}
 
 
@@ -372,7 +377,7 @@ Lastly, a practical alternative is to use public-key cryptography. The most comm
 \end{enumerate}
 
 
-\subsection{Possible Network Topologies}
+\subsection{Possible Network Topologies} \label{sec:networkTopologies}
 There are two main network topologies that can be used in order to implement a DC-Net: peer-to-peer an client-server. The network topology is not to be confused with the key-exchange topologies presented in section \ref{sec:participantsextention}.
 
 \subsubsection{Peer-to-Peer} \label{sec:peertopeer}

@@ -83,7 +83,7 @@ The advanced requirements address the issues of the basic protocol that, unless 
 
 
 \subsubsection{Informal description of the advanced protocol at work}
-\noindent The final version of the simulation, the advanced protocol, works in a more complex manner. 
+\noindent The final version of the simulation, the advanced protocol, will work in a more complex manner. 
 
 Firstly, the protocol can be executed with any number of clients in the network, as long as the minimum number of three clients is present. Since at the beginning of a round the generation of adjacencies and their respective keys takes place, a client that connects to the website while the protocol is being executed, will have to wait the end of the current round before participating in the communication. Conversely, if a client disconnects during the protocol execution but at least three other participants are still connected, the system will be resilient enough to complete the round. The key-sharing graph topology employed to support an arbitrary number of clients will be a ring topology (section \ref{sec:ringtopology}). \newline
 
