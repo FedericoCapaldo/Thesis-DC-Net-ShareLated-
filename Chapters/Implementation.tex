@@ -1,45 +1,142 @@
 \chapter{Implementation}
-This chapter explores the development phase of the simulator following the outline design structure. The implementation of the project took place in iterations in order to prioritize features and to decrease the overall complexity of implementing all the requirements at once. The complete source code can be found in Appendix \ref{appendix:code}. In addition, Appendix \ref{appendix:userguide} explains how to use the simulation tool.
+This chapter explores the development phase of the simulator following the outlined design structure. The implementation of the project took place in iterations in order to prioritize features and to decrease the overall complexity of implementing all the requirements at once. The complete source code can be found in Appendix \ref{appendix:code}. Appendix \ref{appendix:userguide} explains how to use the simulation tool, and Appending \ref{appendix:setupguide} explains how to run the code locally.
 
 
 \section{Introducing used Technologies}
+This section is an overview of the technologies implemented during the project so as to give a brief introduction of which library or framework has been employed for each part of the architecture.
+
 
 \subsection{Node.js}
+Node.js is JavaScript framework to create servers. It supports useful features such as asynchronous Input/Output, and real-time communication. The ecosystem of this language is the largest collections of open source libraries in the world, called modules. It has been chosen for the simulator because it is specifically designed to create web applications and it has modules for real-time communication and cryptography functions that are the main functionalities needed for the simulation. In addition, it unifies the application with a single main programming language as JavaScript is used both for back-end and front-end development. 
+
 
 \subsection{Socket.io}
+Socket.io is a real-time library for bi-directional communication between clients and servers. The availability of this library only in JavaScript was one of the main reasons to choose Node.js as the preferred server-side environment. This library is based on web sockets, a communication protocol, and it serves as a high-level wrapper to them.
+
+The communication is event-based. Therefore, the some action needs to happen in order to trigger the execution of some code usually stored in an 'event handler' function.
+The ease of use of this library makes it easy to create a real-time applications allowing the effort of development to be focused on the security properties that the simulation needs to achieve, rather than being slowed down by how to create a distributed system and exchange messages with low latency.
+
+The library can be used both on the back-end and front-end, so a client and a server can use the same functions (from the API) to trigger or handle events.
+
 
 \subsection{React.js}
+This is another JavaScript library that allows modular development of graphical user interfaces (GUI) in the form of 'components' that can be reused. It is a uncomplicated to create an interface that are interactive and change aspect based on the state of the application.
+
+Therefore, it is a very handy library to create this simulation tool, to create a self-explanatory GUI that will be updated at each stage of the protocol execution.
+
+React.js is used in conjunction with JSX, a special syntax to describe what the UI should look like based on the logic state of the application/component, which is a mixture of HTML and JavaScript.
+
+Since JSX is a special syntax that needs to be 'transpiled' into plain JavaScript and HTML that the browser can understand. In order to do, 'Babel' transpiler will be used through in conjunction with a module bundler technology called 'Webpack'. This latter simply merge together several components created during the development phase into a unique 'bundle' file that will be sent to the browser.
+
+Indeed, the set up for this library is not straightforward, but it is a valuable asset in building a state-based UI.
+
+\subsection{Other third-parties Libraries}
+The following are other libraries utilized for significant functionalities of the system that helped both in terms of functionalities and sped up the development phase.
+
+\subsubsection{Cryptographically Secure Pseudo-Random Number Generator (csprng)}
+A pivotal code functionality to be implemented successfully is a random generator that produces cryptographically secure numbers to be used as secret keys for each adjacency. A generator that provides this property means that each number is equally likely to be generated, preventing any sort of attack based on the statistical frequency of a stream of generated numbers. 
+For this reason, the 'random-number-csprng' library has been implemented, where possible, instead of writing functions that manually generate a random number in a given range.
+
+\subsubsection{Random Name Generator}
+The final application will support an arbitrary number of participants connected to the application. In order to identify them among each other a Node library to generate random names has been implemented called 'node-random-name'. 
+
+\subsubsection{Mocha \& Chai}
+An important aspect for a mature application is to employ a framework for unit-testing, which is a method to prove the correctness of the logic of an application by verifying the output of a unit being tested is indeed what was expected.
+
+In order to do so in this application, the testing frameworks used is Mocha in conjunction with the assertion library Chai. 
 
 
-\section{Implementation of Basic Requirements}
+\section{Development Approach}
+The approach used throughout the project is a lean methodology that consists in brief iterations of design, implementation and testing. This allowed flexibility to review direction and aims of the initial proposal during project evolution. In addition, making use of iterations helped to be mindful of the time and resource constraints that, as in any other project, were present. Namely, iterations assisted the prioritization of which aspects were more important and what were the dependencies between features to arrange their execution sensibly. This approach lead to the division of the requirements in basic and advanced.
 
-\section{Features}
 
-\subsection{Random Names}
+The implementation of functionalities progressed in the following order:
+\begin{enumerate}
+    \item Implement hard-coded version of the protocol in a single JavaScript file with three participants represented by variables and using a general number random generator;
+    \item Develop Node.js web application integrated with React.js and transpiling pipeline of Webpack and Babel;
+    \item Integrate Socket.io with React.js for real-time communication;
+    \item Distribute the execution of basic protocol between clients and server. Each client possess logic functions inside the main React component (AppComponent). The server generates adjacencies and reacts to events such as connection and disconnection of a client which may trigger the start of the protocol;
+    \item Substitute simple random generator with a cryptographically secure pseudo-random number generator;
+    \item Implement random name generator to have unique client names;
+    \item Introduce objects (Adjacency, Participant, Round) to group functionalities and attributes together and improve modularity of the codebase;
+    \item Implement security mechanism to abort communication with less than 3 clients;
+    \item Implement clean-up functionalities for the client's browser. This clears keys and other local data when communication is aborted but then restarts again;
+    \item Refactor code after having implemented all of the basic features, separating, where possible, the logic of the protocol from the sever-client communication functions;
+    \item Implement helper messages on hover for the main steps of the protocol execution;
+    \item Start Unit-Testing of the logic functions;
+    \item Refactor the AppComponent into smaller React components, each responsible for a single element of the GUI;
+    \item deploy application 
+    \item Repeat protocol execution continuously, so as to have multiple rounds of communication;
+    \item Support connection of an arbitrary number of clients to the server;
+    \item Handle connection and disconnection of clients in the middle of round execution;
+    \item Implement key storage on the server and utilize this to detect collision;
+    \item Implement 8-bit keys;
+    \item Divide communication into three types of rounds (voting round, length-calculation round, communication round) and all the relative features that this division entails;
+    \item Implement the new security mechanisms needed: prevent the message sender to win the next voting round; abort round when message sender disconnects during round; abort communication if all clients try to send a message in the same round;
+    \item Refine user-interface to improve user-friendliness and perform final refactor of codebase;
+\end{enumerate}
+
+
+\subsection{Development Pipeline Tools}
+To publish the simulator online, a continuous integration development pipeline was created. This simply means that new features are available live as soon as the codebase updates happen, ensuring that the application is tested correctly. \newline
+
+Firstly, the code is uploaded on Github, a code-sharing platform where a user can store projects.
+
+Secondly, through the presence of a webhook on Github, a code update will trigger the automatic execution of unit-tests in Circle CI (continuous integration). This ensures that new features did not break functionalities previously built.
+
+Lastly, If all tests successful the code is automatically released on the web hosting platform Heroku. The application is in fact available at \url{https://www.dc-net.herokuapp.com}.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.70\textwidth]{Images/pipeline.png}
+    \caption{Development Pipeline}
+    \label{fig:devPipeline}
+\end{figure}
+
+
+\section{Basic Implemented System}
+This section presents the simulator components at the competition of the basic requirements.
+
+The website is a single-page application, and when a client connects it tries to join the protocol simulation straight away.
+
+
+
 
 \subsection{Fundamental Security Mechanisms}
 
-\subsubsection{Cryptographically Secure Pseudo-Random Number Generator (csprng)}
-
 \subsubsection{XOR functions}
+
+
+
+\begin{lstlisting}
+  calculateXORValue(key1, key2, participantMessage) {
+    return key1 ^ key2 ^ participantMessage;
+  }
+\end{lstlisting}
+
 
 \subsubsection{Abort Communication Control Flow}
 
 
-\section{Implementation of Advanced Requirements}
-
+\section{Advanced Implemented System}
+This sections presents the more complex system achieved at the end of the project with the implementation of all of the advanced requirements.
 
 \subsection{Collision Detection}
-
 
 \subsection{Handle Connections and Disconnections}
 
 \subsubsection{Browser Connections Limit}
 
+\subsection{Arbitrary number of participants}
 
 
 \section{Unit Testing}
+As previously mentioned, unit testing is the execution of tests on small parts of the codebase, usually one function at a time. This happens by running a given function with some chosen input and comparing the expected output with the actual output. 
 
+Not only unit testing has the main purpose of checking the correct execution of the logic of your application, but it also helps to break down the codebase into separate functions, each one with its specific purpose, since it would otherwise be difficult to test.
+
+
+NON SO QUESTE DUE SECTIONS
 \section{Implementation roadblocks}
 
 

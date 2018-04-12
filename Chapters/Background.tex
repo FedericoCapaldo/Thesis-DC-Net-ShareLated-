@@ -242,24 +242,27 @@ The following is the scenario and procedure of the protocol executed with the mi
 From now on, the dinner analogy language and the formal graph notation will be used interchangeably. \newline \newline \newline
 
 \section{Limitations}
-As already mentioned, the Dining Cryptographer is a very effective protocol to guarantee sender anonymity in \textit{theory}. In reality, there are three main limitations, which show the weaknesses of this protocol: message collision, communication disruption and overhead. 
+As already mentioned, the Dining Cryptographer is a very effective protocol to guarantee sender anonymity in \textit{theory}. In reality, there are some limitations, which affect the practicality of the protocol in a real-world use to the point there does not exist a fully-working version of this protocol.
+The three main limitations we now turn to explore are: message collision, communication disruption and communication overhead. 
 
 \subsection{Collisions}
-So far, one of the assumptions to verify the correctness and efficacy of the protocol was that only one vertex, or cryptographer, broadcasts a message per round. However, it is possible and likely that multiple vertices will try to send a message (i.e. a reversed response) in the same round, which will lead to a collision. The consequence is that if an even number cryptographers sends a message in the same round, the final result will be 0, which equates to 'no one has flipped their message'. If an odd number of cryptographers sends a message in the same round, the final result will be 1, which corresponds to just one cryptographer having sent a message.
+A message collision is the attempt of two cryptographers to send a message in the same round of communication.So far, one of the assumptions to verify the correctness and efficacy of the protocol was that only one vertex, or cryptographer, broadcasts a message per round. However, it is possible and likely that multiple vertices will try to send a message, i.e. a reversed response, in the same round, which leads to a message collision. The consequence is that, if an even number cryptographers sends a message in the same round, the final result will be 0, which equates to 'no one has flipped their message'. If an odd number of cryptographers sends a message in the same round, the final result will be 1, which corresponds to just one cryptographer having sent a message.
+Therefore, if this probable scenario is not acknowledged, the correctness of the protocol is jeopardized.
 
 \subsection{Disruption and Collusion} \label{sec:disruptionlimitation}
-A passive attacker is a principal that can only intercepts messages being exchanged, eavesdropper. An active attacker, instead, performs malicious actions such as sending manipulated messages himself.
+Disruption and collusion are two limitations brought by the presence of active attackers in the network. A passive attacker is a principal that can only intercepts messages being exchanged, eavesdropper. An active attacker, on the other hand, performs malicious actions, such changing the content of a messages before sending it. The protocol is secure in respect to an eavesdropper. However, a cryptographer inside the network, who is an active attacker, could inject falsified responses instead of following the protocol rules. Unless these forged messages are somehow detected, this can easily disrupt the execution of the protocol.
 
-The protocol is secure in respect to an eavesdropper. However, a cryptographer inside the network that is active attacker could inject falsified responses instead of following the protocol rules, and this disrupts the execution of the protocol unless these forged messages are somehow detected. 
+Another possible problem may be incurred by an active attacker delaying his responses at each round. Since the final result of the round cannot be calculated unless all the clients have provided their responses, such delay may affect the availability of the service \cite{Fischer}.
 
-Another possible hindrance is an attacker that simply delays his responses each round, keeping the other participants waiting \cite{Fischer}.
+Moreover, active attackers within the network may collaborate to uncover the real sender of a message by pooling together their keys. This possible threat is called collusion. Assuming three participants in the network and one cryptographer discovering the value of the third hidden coin via key pooling with one of his neighbours, this malicious cryptographer can establish who sender is, if any is present \cite{Chaum}. 
 
-In addition, another threat is collusion: a number of attackers in the network can collaborate in order to uncover the real sender of a message by pooling together their keys \cite{Chaum}. A simple example consists in a network of three participants where a cryptographer comes to know the value of the third hidden coin through the key pooling with one of his neighbours. In such case, the said malicious cryptographer can establish who sender is, if any is present. The simplicity of colluding also depends on the architecture implemented (see section \ref{sec:participantsextention}). This type of collaboration is mentioned by Chaum as an issue, but it is addressed in more depth by other academic papers that specifically focus on this matter, such as the work of Waidner \cite{Waidner}.
-
+This type of collaboration is treated in more depth by other information security academics, such as Waidner \cite{Waidner} or Safavi-Naini and Susilo \cite{Susilo}. As established by several academic analyses, the technical capability of colluding also depends on the key-sharing topology implemented, therefore this limitation may be mitigated by using specific architectures (see section \ref{sec:participantsextention}). 
 
 
 \subsection{Communication Overhead} \label{sec:complexitylimitation}
-The unconditional security of this protocol comes at a cost. Depending on the architecture implemented, there are several messages to be sent in order to hide the real sender. Each client is part of two messages per round of communication: one message sent as part of the sender anonymity set and one message is received as part of the recipient anonymity set.
+An overhead is an excess of computation power or resources needed to perform a specific task. 
+
+Depending on the architecture implemented, there are several messages to be sent in order to hide the real sender. Each client is part of two messages per round of communication: one message sent as part of the sender anonymity set and one message is received as part of the recipient anonymity set.
 
 In the key-sharing graph explained so far (see section \ref{sec:ringtopology}), given $n$ participants, a single bit message will require at least $2n$ messages to be sent on the network in a single round. 
 
@@ -271,13 +274,16 @@ The operating cost is likely to be the main reasons why such powerful protocol i
 
 
 \section{Extensions of Basic Protocol}
-The protocol presented allows only for one-bit messages exchanged among three participants. Both these characteristics, message length and number of participants, can be adjusted in order to increase the utility of the protocol. 
+
+The basic protocol is presented with specific message length (one-bit messages) and a given number of participants (three). However, in the real world, it is highly unlikely that a network would exhibit three participants exchanging only one-bit messages. Based on such features, the pertinence of the protocol is restricted to an unrealistic scenario. 
+
+To extend the applicability of Chaum's protocol, we can consider more participants and more complex messages within the network as per below.
 
 \subsection{Increase number of participants} \label{sec:participantsextention}
-From the minimum number of three, the basic protocol can be generalized with two possible different topologies so as to accommodate \textit{n} participants.
+The basic protocol can be generalized to accommodate \textit{n} participants (more than 3) with two different topologies.
 
 \subsubsection{Ring Topology} \label{sec:ringtopology}
-The first method to extend the protocol to multiple payers is very similar to the one presented up to this point. Each vertex will have only two edges, one with each neighbour, and the protocol follows the same rules, as showed in figure \ref{fig:nparticipants1}.
+One of the two methods to extend the protocol to multiple payers is very similar to the one presented up to this point. Each vertex will have only two edges, one with each neighbour, and the protocol follows the same rules, as showed in figure \ref{fig:nparticipants1}.
 
 More formally speaking: 
 \begin{enumerate}
@@ -320,18 +326,19 @@ More formally speaking:
 \end{figure}
 
 
-Each approach has advantages over the other. A ring topology has less overhead, as explained in section \ref{sec:complexitylimitation}, while a full-mesh topology can be considered more secure against collusion of participants, explained in section \ref{sec:disruptionlimitation}.
-Increasing the number of participants has two main benefits:
+Each approach presents advantages over the other. A ring topology uses less computational power therefore presents less overhead, as explained in section \ref{sec:complexitylimitation}, while a full-mesh topology can be considered more secure against collusion of participants, explained in section \ref{sec:disruptionlimitation}.
+The overall benefit of multiple participants within a network is twofold:
 \begin{enumerate}
     \item adapting the protocol to a real-world scenario as it is unreasonable to have a network with only three nodes;
     \item growing the number of participants increases the level on anonymity as explained in section \ref{sec:anonymityset}; \newline \newline
 \end{enumerate} 
 
 \subsection{Extend message length}
-The other aspect that can be adjusted to increase effectiveness is the length of messages. The idea of sending messages longer than one bit may have two possible meanings. Namely, sending different keys that are longer than one bit or repeating the round multiple times in order to gather pieces of the same message.
+
+Accommodating many participants makes the protocol more suitable for a real application. So does the possibility of sending longer messages. Increasing the length of messages to more than one bit may have two possible meanings: (1) to send different keys that are longer than one bit or (2) to repeat the round multiple times in order to gather pieces of the same message.
 
 \subsubsection{Keys longer than one bit} \label{sec:longerKeys}
-Using this technique, it is possible to increase the range of possible keys by growing the number of key bits. For example, if the key is 8-bit long the range of possible outcomes becomes 0-255 ($2^8$), as opposed to a 1-bit key with range 0-1 ($2^1$). Using this method, the vertex that wishes to send a message can broadcast a value in the same wider range \cite{Scholz}. An example is provided in figure \ref{fig:xorlongkeys}.
+The range of possible keys can be incremented by growing the number of bits in a key. If the keys are, for example, 8-bit long, the possible randomly generated value of a key can be anything between 0 and 255 ($2^8$), as opposed to a 1-bit key where values can only be 0 or 1 ($2^1$) \cite{Scholz}. A 1-bit key network allows a sender cryptographer to XOR his two secret keys with a 0 or 1, which corresponds to flipping a message (see section \ref{}). A 8-bit key network allows the sender cryptographer to XOR his two secret keys with a value, i.e. anonymous message, that can be anything between 0-255 as the range of the key. An example is provided in figure \ref{fig:xorlongkeys}.
 
 \begin{figure}[h!]
     \centering
@@ -340,22 +347,24 @@ Using this technique, it is possible to increase the range of possible keys by g
     \label{fig:xorlongkeys}
 \end{figure}
 
-To exemplify a pragmatic reason why an 8-bit key might be more useful is that ASCII-encoded values are represented with 8 bits (there are 256 ASCII characters). Therefore, a node can hide in his message any ascii character (a number, letter or symbol) to be broadcasted.
+Adopting longer keys can be useful. Take, for example, the ASCII character encoding, a technique to represent a character (e.g. a number, symbols or letters) has a corresponding number. The official ASCII encoding contains 128 characters, and the extended version has 256 of them, which can therefore represented in 8 bits ($2^8$). Therefore, a cryptographer wanting to send a specific letter may simply XOR his two secret keys with the ASCII number that represents the said letter.
 
 
 \subsubsection{Multiple Rounds} \label{sec:messageExtentionRounds}
-An alternative, and/or an addition, to send longer messages is simply to repeat the protocol multiple times, so that a node can send multiple messages in a row, either with a 1-bit key or in conjunction with the long-key technique explained in the previous section. By doing so, it is possible to broadcast a cumulative message that might be more meaningful that a single round of communication.
+An alternative to sending longer messages is to repeat the protocol multiple times. The repetition allows a node to send multiple messages in a row, either with a 1-bit key or in conjunction with the long-key technique explained in the previous section. By repeating the protocol multiple rounds, a cryptographer can broadcast a cumulative message that might be more meaningful that a single round of communication.
 
 
 
 \section{Practical Considerations}
-As we have discussed, the Dining Cryptographers protocol tries to jointly compute the result of a function from different nodes. Such type of protocol is a specific subfield of cryptography called 'secure multi-party computation' \cite{wiki1}. This suggests that the nodes are distributed on a network, which raises number of questions: 
+As we have discussed, the Dining Cryptographers protocol tries to jointly compute the result of a function from different nodes. Such type of protocol is a specific sub-field of cryptography called 'secure multi-party computation' \cite{wiki1}. 
 
-What network topology is it used to implement this protocol? 
+The fact that nodes do not reside in the same physical location, adds further complications to the scenario, such as the network topology used to implement the protocol, the implications of the distributed architecture over the protocol's computation and the method of transmission of the secret one-time keys  to each node.
+
+(What network topology is it used to implement this protocol? 
 
 What implication has the distributed architecture over the protocol computation? 
 
-As DC-Net relies on confidential one-time keys, how does such secret reach each node?
+As DC-Net relies on confidential one-time keys, how does such secret reach each node?)
 
 \noindent \newline These practical issues are addressed in this section to start considering what are the repercussions of implementing a protocol that, in theory, provides flawless sender anonymity.
 
