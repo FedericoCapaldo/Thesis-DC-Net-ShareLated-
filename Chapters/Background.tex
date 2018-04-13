@@ -241,7 +241,7 @@ The following is the scenario and procedure of the protocol executed with the mi
 
 From now on, the dinner analogy language and the formal graph notation will be used interchangeably. \newline \newline \newline
 
-\section{Limitations}
+\section{Limitations} \label{sec:limitations}
 As already mentioned, the Dining Cryptographer is a very effective protocol to guarantee sender anonymity in \textit{theory}. In reality, there are some limitations, which affect the practicality of the protocol in a real-world use to the point there does not exist a fully-working version of this protocol.
 The three main limitations we now turn to explore are: message collision, communication disruption and communication overhead. 
 
@@ -407,13 +407,15 @@ In this scenario, the only possible solution is to employee a server as central 
 
 
 \section{Existing DC-net simulation tools} \label{sec:similarWorks}
-It is important to research the area of interest of a project in the early stages of development in order to analyse the existing works, draw inspiration, and determine possible areas of improvement. \newline
+It is important to research the area of interest of a project in the early stages of a piece of work in order to understand the current state of the art, draw inspiration, and determine possible areas of improvement of the matter considered.
 
-The main purpose of this project is to develop a simulation tool for the Dining Cryptographers protocol. The outcome of the research of existing tools is in fact the leading motivation for implementing a DC-Net simulator. Namely, there is an easily identifiable gap in the domain of practical software systems that exemplifies the functioning of this protocol, whereas there is a wealth of academic papers that thoroughly examines the protocol on a theoretical level. 
+The Dining Cryptographers protocol is an extensively studied topic addressed by several academic papers. The basic idea proposed by Chaum contains a number of limitations as we have seen in section \ref{sec:limitations}, and various papers propose complex and interesting solutions to solve very specific issues of the protocol (e.g. how to exchange keys securely). The common denominator of all these works is that they are largely theoretical. 
 
-In addition, the handful of projects found is of little help in deepening the understanding of the protocol since they are mostly command-line tools that, beside the unhelpful user experience in terms of graphics, are not well-documented on how to perform even a single round of communication. \newline
+The main purpose of this project is to develop a practical simulation tool for the Dining Cryptographers protocol, and therefore the research of similar works focuses purely on practical implementations and simulations of a DC-Net. As a matter of fact, the outcome of the research of existing tools is the leading motivation for implementing a DC-Net simulator. Namely, while there exists a wealth of academic papers that thoroughly examines the protocol on a theoretical level, there is an easily identifiable gap in the domain of practical software systems that exemplifies the functioning of this protocol.
 
-DC-Net is is mostly a theoretical concept, therefore researches on the wide internet lead exclusively to academic papers. A sensible approach to find possible implementations is to search through the development platform GitHub. Below are some implementation found, which highlight the shortcomings of the current state of art in DC-Net implementations.
+In addition, the handful of projects found is of little help in deepening the understanding of the protocol since these simulations are mostly command-line tools that, beside the unhelpful user experience, are not well-documented on how to perform even a single round of communication. \newline
+
+Given that  DC Networks are mostly a theoretical concept, researching the wide internet lead exclusively to academic papers. A more sensible approach to find possible implementations is to search through the development platform GitHub. Below are some implementation found, which highlight the shortcomings of the current state of art in DC-Net implementations.
 
 \subsection{Example 1}
 The first is a command line tool that presents extensive documentation, which appears to be very handy (figure \ref{fig:work1documentation}). However, all the commands listed in the documentation do not work, return errors, and there is no troubleshooting guide (figure \ref{fig:work1error}).

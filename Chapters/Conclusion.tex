@@ -1,9 +1,13 @@
 \chapter{Conclusions and Future Works}
 
 \section{Conclusions}
+The aim of this project was to create a simulation tool for a Dining Cryptographer network. The report started giving an in-depth presentation of this security protocol, to then move to the explanation of the implementation process, starting from design and ending with testing. The need to develop such a tool was found in the lack of interesting practical works on this protocol, which is however address extensively by academic theoretical works. The implementation met all the intended requirements both the basic ones, for an acceptable product, and the advanced ones, for a more complex system with useful functionalities. A number of roadblocks arose throughout the development of the project: - metti i roadblocks. 
 
+As a consequence of meeting these challenges, my contributions are: a proposal of diving the communication in voting, length-calculation and communication round (instead of voting and communication rounds); detecting collision by storing secret keys on the server; using 8-bit keys that allow a message to be any number from 0 to 255, which allows to interpret an anonymously shared message with the ASCII encoding standard in order to share useful human-readable messages. In addition, also the simulation tool published live at \url{https:www.dc-net.herokuapp.com} is a practical contribution for the community. Most importantly, the difficulties encountered during the development expanded further the goal of creating a simulation tool by also offering, as a contribution, an analysis presented in the evaluation which appreciates the discrepancy between theory and implementation of the Dining Cryptographers protocol.
 
 \section{Future Works}
+There are a number of future works to recommend in order to further move the simulation closer to a fully working implementation of the protocol.
+
 
 \subsection{Server Trust Issue}
 how? ssl for authentication

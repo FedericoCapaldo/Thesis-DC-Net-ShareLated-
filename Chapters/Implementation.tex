@@ -6,9 +6,10 @@ This chapter explores the development phase of the simulator following the outli
 This section is an overview of the technologies implemented during the project so as to give a brief introduction of which library or framework has been employed for each part of the architecture.
 
 
-\subsection{Node.js}
-Node.js is JavaScript framework to create servers. It supports useful features such as asynchronous Input/Output, and real-time communication. The ecosystem of this language is the largest collections of open source libraries in the world, called modules. It has been chosen for the simulator because it is specifically designed to create web applications and it has modules for real-time communication and cryptography functions that are the main functionalities needed for the simulation. In addition, it unifies the application with a single main programming language as JavaScript is used both for back-end and front-end development. 
+\subsection{Node.js \& Express.js}
+Node.js is JavaScript run-time environment to create servers. It supports useful features such as asynchronous Input/Output, and real-time communication. The community of this language offers the largest collection of open source libraries in the world. It has been chosen for the simulator because it is specifically designed to create web applications and it has modules for real-time communication and cryptography functions that are the main functionalities needed for the simulation. In addition, it unifies the application with a single main programming language as JavaScript is used both for back-end and front-end development \cite{Nodejs}. 
 
+Express.js is lightweight framework that helps to build a web application and server static files and resources through a simple-to-use API. For the purpose of this project, node.js would suffice. However, express.js is employed to write less manual/verbose commands that node.js would require.
 
 \subsection{Socket.io}
 Socket.io is a real-time library for bi-directional communication between clients and servers. The availability of this library only in JavaScript was one of the main reasons to choose Node.js as the preferred server-side environment. This library is based on web sockets, a communication protocol, and it serves as a high-level wrapper to them.
@@ -40,7 +41,7 @@ For this reason, the 'random-number-csprng' library has been implemented, where 
 \subsubsection{Random Name Generator}
 The final application will support an arbitrary number of participants connected to the application. In order to identify them among each other a Node library to generate random names has been implemented called 'node-random-name'. 
 
-\subsubsection{Mocha \& Chai}
+\subsubsection{Mocha \& Chai} \label{sec:testingFrameworks}
 An important aspect for a mature application is to employ a framework for unit-testing, which is a method to prove the correctness of the logic of an application by verifying the output of a unit being tested is indeed what was expected.
 
 In order to do so in this application, the testing frameworks used is Mocha in conjunction with the assertion library Chai. 
@@ -93,7 +94,6 @@ Lastly, If all tests successful the code is automatically released on the web ho
     \label{fig:devPipeline}
 \end{figure}
 
-
 \section{Basic Implemented System}
 This section presents the main components of the simulator implemented at the completion of the basic requirements. 
 
@@ -104,8 +104,16 @@ A client that connects to the server, by typing \lstinline{https://www.dc-net.he
 
 
 \subsection{Socket.io communication example}
-\lstinline{Socket.io} provides an API that is used by the server to trigger, i.e. emit, real-time events that will instantly reach the client/clients. The following are two examples of \lstinline{emit} events: 
+\lstinline{Socket.io} provides an API that is used by the server to trigger, i.e. emit, real-time events that will instantly reach the client/clients (figure \ref{fig:incomingConnection}). 
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Images/Implementation/incomingConnections.png}
+    \caption{Incoming connections displayed on a client}
+    \label{fig:incomingConnection}
+\end{figure}
+
+The following are two examples of \lstinline{emit} events: 
 \begin{lstlisting}
   /* server sends broadcast event 'client-connection' to all connected clients and sends them the name of the participant that just connected*/
   io.sockets.emit('client-connection', newParticipant.name);
@@ -172,7 +180,7 @@ The React.js feature that updates the user interface is the automatic re-renderi
 This is a simple yet powerful concept that allows a granular manipulation of the interface.
 
 
-\subsection{Trigger execution of the protocol}
+\subsection{Trigger execution of the protocol} \label{sec:triggerProtocol}
 The server starts of the execution of the protocol as soon as three clients establish a connection. This is possible because, as mentioned in section \ref{sec:initialConnection}, a \lstinline{connection} event is emitted by the client at connection time and received by the server. The basic version of the connectionHandler on the server creates a new Participant objects and stores it in a list to keep track of the current connections, it broadcasts to all clients the fact that a new connection happened, and if at least three users are connected the protocol begins.
 
 \begin{lstlisting}
@@ -228,9 +236,19 @@ The random generation of secure keys is crucial to ensure untraceability of the 
 \end{lstlisting}
 
 \subsection{XOR functions}
-Once the keys have been generated from the server and received by the clients, the main logic operation of the protocol takes place: XOR of secret keys and, in case of the message sender, participant message. In the basic version of the protocol the client can simply express the intention to send a message. 'Yes' equates to XORing the secret keys with 1, and 'No' equates to XORing the secret keys with 0.
+Once the keys have been generated from the server and received by the clients, the main logic operation of the protocol takes place: XOR of secret keys and, in case of the message sender, participant message. In the basic version of the protocol the client can simply express the intention to send a message (figure \ref{fig:sendMessageQuestion}). 'Yes' equates to XORing the secret keys with 1, and 'No' equates to XORing the secret keys with 0.
 
-The XOR operation in JavaScript is called 'Bitwise XOR Operator' \cite{XORJS} and its symbol is $\wedge$.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{Images/Implementation/sendMessageQuestion.png}
+    \caption{Question for user to send message}
+    \label{fig:sendMessageQuestion}
+\end{figure}
+
+
+
+\noindent The XOR operation in JavaScript is called 'Bitwise XOR Operator' \cite{XORJS} and its symbol is $\wedge$.
 \begin{lstlisting}
     // XOR function on the browser's client
     calculateXORValue(key1, key2, participantMessage) {
@@ -255,7 +273,7 @@ Once all the results reach the server, its role is to combine them so as to reve
 
 
 \subsection{A round of communication}
-Using the logic components, the most important of which were presented above, jointly with socket.io events the protocol is successfully carried out.
+Using the logic components, the most important of which were presented above, jointly with socket.io events the protocol is successfully carried out (figure \ref{singleRoundExecuted}).
 
 \begin{figure}[H]
     \centering
@@ -266,26 +284,199 @@ Using the logic components, the most important of which were presented above, jo
 
 Beside the main steps described and presented in figure \ref{fig:protocolExecuted}, there are more underlying \lstinline{socket.io} events communicated in order to update the graphical user interface of the user and provide explicate content about each stage of the protocol.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Images/Implementation/singleRoundExecuted.png}
+    \caption{UI at the completion of one communication round.}
+    \label{fig:singleRoundExecuted}
+\end{figure}
+
+
+\subsection{HTTPS only on deployed application}
+The solution proposed to exchange secret keys securely is to employ secure HTTP protocol, i.e. HTTPS, to connect with the web sever. This ensure that keys cannot be seen by an eavesdropped. In fact, this actually seals not only the key sharing phase but whole of the communication with encryption.
+
+\begin{lstlisting}
+    // function credit to https://stackoverflow.com/a/31144924/3245486
+    function requireHTTPS(req, res, next) {
+        // The 'x-forwarded-proto' check is for Heroku
+        if (!req.secure && req.get('x-forwarded-proto') !== 'https' && process.env.NODE_ENV !== "development") {
+            return res.redirect('https://' + req.get('host') + req.url);
+        }
+        // allow next incoming requests
+        next();
+    }
+    
+    // enforce https on production
+    if(process.env.NODE_ENV === 'production') {
+        app.use(requireHTTPS);
+    }
+\end{lstlisting}
+
+
 \section{Advanced Implemented System}
-This sections presents the more complex system achieved at the end of the project with the implementation of all of the advanced requirements.
+This section presents the final implemented system, which includes all the advanced requirements. The codebase is more complex and the features presented are the main additions to the platform presented before.
+
+
+\subsection{Arbitrary number of participants}
+To execute the protocol with an arbitrary number of participants is enough to accept all incoming connections, instead of throwing an error when a fourth participant tries to connect, as shown in section \ref{sec:triggerProtocol}. The real challenge of supporting an arbitrary number of participants is to handle connections and disconnection throughout the execution of the protocol. This problem was not present with only three clients, as this was the both the minimum and maximum number of participants in the network, and any variation of participants would simply stop the execution of the protocol. \newline
+
+To support incoming connections during the protocol execution, a participant is added to a list of pending participants, instead of joining the simulation immediately. To improve the user experience, the waiting participants is also informed of such event with a clear message.
+
+\begin{lstlisting}
+    // if simulation started make participant wait.
+    if(simulationStarted) {
+        pendingParticipants = [...pendingParticipants, newParticipant];
+        // inform user that he is waiting 
+        unicastEvent(newParticipant.id, 'display-waiting-message');
+    } else {
+        // allow user to join the simulation straight away.
+    }
+\end{lstlisting}
+
+Only at the end of the protocol pending participants can then join the simulation.
+
+\begin{lstlisting}
+    function addPendingParticipantsToSimulation() {
+        // join simulation by being added to participants array
+        participants = [...participants, ...pendingParticipants];
+        pendingParticipants.forEach(function (pendingParticipant) {
+            unicastEvent(pendingParticipant.id, 'hide-waiting-message');
+        });
+        pendingParticipants.length = 0;
+    }
+\end{lstlisting} 
+
+
+To support disconnections of participants during the protocol execution instead, the simulator immediately removes the participant from the simulation. His neighbouring clients update their key values so as to preserve the correctness of the protocol execution. For the sake of brevity the code of this functionality is omitted from the main report, but it can be found in the appendix \ref{appendix:code}, specifically in the \lstinline{chat-server.js} file.
+
+\subsubsection{Browser Connections Limit}
+It is important to note that modern browsers allow a limited number of persistent connections per domain. The average number of connections allowed is 4 to 6 \cite{Souders}. Therefore, it turns out that trying to test this application from a single machine using Chrome browser, it is only possible to open 5 browser tabs that connect to the DC-Net server. Using multiple browsers allows to grow this number for testing purposes from the same computer.
+
+
+\subsection{Voting, Length-Calculation, Communication Round}
+The final simulator includes three types of rounds as first presented in section \ref{sec:advancedReq}. Each type of round has its own dedicated functions to start the round, to generate and share secret keys, handle results on the server and so on. This is due to the fact that despite being similar, each of the round types presents some variations.
+
+The voting round uses 1-bit keys and it tries to simply determine who will send a message. This round type is repeated until someone decides to send a message and wins the voting round.
+
+The length-calculation rounds allows the message sender to provide a sentence, in the time span of 10 seconds. After this time, all participants browsers, including the non sender's one, will automatically dispatch the response to the server. The time span is fixed for all participants, to avoid a scenario in which the message sender takes a long time to write a message. In such case, the sender would be reveal by simply looking at the which message was received last by the server. Due to the limited time frame, the message sender has 3 attempts to provide the sentence. In addition, the key will be a secure random value in between 100 and 999. I chose this range to avoid a scenario in which all the secret keys are very short numbers to be XORed with the message length. If this latter value would be considerably longer than the keys themselves, untraceability of the sender could be compromised by looking at which is the greater response sent to the server. 
+
+Lastly, there is a number of communication rounds, one for each letter of the sentence provided. These rounds happens with a short delay between each other, and at the end the aggregate message received will be shown. Communication round use 8-bit keys, useful to hide the corresponding number of a ASCII character, as explained in the next section. In order to generate n keys, I employed the \lstinline{crypto} JavaScript in-built module to generate an array of cryptographically secure pseudo-random numbers.
+
+\begin{lstlisting}
+    function secureRandomKeyArrayOfLength(n) {
+      // 8 bits goes from 0 to 255
+      let pseudoRandom = new Uint8Array(n);
+      let bytes = crypto.randomBytes(n);
+      pseudoRandom.set(bytes);
+      return Array.from(pseudoRandom);
+    }
+\end{lstlisting}
+
+
+\subsection{ASCII encoding conversion}
+As one of the main contributions, I proposed to interpret a the value of a round message as a ASCII code. Thus, the sentence provided by the message sender (figure \ref{fig:exampleMessage}) will be a series of ASCII characters (figure \ref{}), and at each communication round the corresponding ASCII code of the nth letter will be XORed with the two secret keys that the sender participant possess.
+
+\begin{figure}[H]
+    \centering
+    \fbox{\includegraphics[width=0.6\textwidth]{Images/Implementation/exampleMessage.png}}
+    \caption{Example of sentence provided by message sender }
+    \label{fig:exampleMessage}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.70\textwidth]{Images/Implementation/messageInASCII.png}
+    \caption{Interpretation of message in ASCII encoding}
+    \label{fig:exampleInASCII}
+\end{figure}
+
+For example, in the first communication round of the message shown in figure \ref{fig:exampleMessage}, if the two secret keys of the message sender are 207 and 91. The round message sent to the server would be $M = 207 \oplus 91 \oplus 104 = 252$.
+
+The conversion from a character to its corresponding ASCII code and vice versa is achieves in JavaScript with simple in-built functions of the String object: 
+\begin{lstlisting}
+    // obtain ASCII code number of a letter from a string called 'sentence'
+    var ASCIIcode = sentence.charCodeAt(letterIndex);
+
+    // obtain a letter from a give ASCII code
+    var letter = String.fromCharCode(ASCIIcode);
+\end{lstlisting}
 
 
 
 \subsection{Collision Detection}
+Detecting collisions is important to ensure that only one participant can send a message per round. In order to do so, the secret keys are generated and stored on the server and then sent to the two participants of a given adjacency. 
 
-\subsection{Handle Connections and Disconnections}
+\begin{lstlisting}
+    // create key names based on the name of the participants in the adjacency
+    var keyName1 = 
+        'Key' + adjacency.participant1.name + adjacency.participant2.name;
+    var keyName2 = 
+        'Key' + adjacency.participant2.name + adjacency.participant1.name;
+    // store keys on the server
+    adjacency.participant1.keys = 
+        [...adjacency.participant1.keys, {keyName: keyName1, keyValue}];
+    adjacency.participant2.keys = 
+        [...adjacency.participant2.keys, {keyName: keyName2, keyValue}];
+    // send keys to clients
+    unicastEvent(adjacency.participant1.id, 'round-key-generated', [keyName1, keyValue]);
+    unicastEvent(adjacency.participant2.id, 'round-key-generated', [keyName2, keyValue]);
+\end{lstlisting}
 
-\subsubsection{Browser Connections Limit}
 
-\subsection{Arbitrary number of participants}
+Then, when a participants sends his round response to the server, the handler function that manages the received responses contains some conditional statements to deal with the different cases. The server computes the expected message, which is the result of XORing only the secret keys when a participants does not attempt to send a value. If the received message is the same as the expected message, then it is simply accepted. However, if the message is different from the XOR of the two secret keys, it means that the client is trying to send a message. Therefore, if someone has already sent a message in this round, the attempt to send a message is rejected, otherwise it is accepted.
+
+\begin{lstlisting}
+    function(participantMessage) {
+        // finding sender with the socket.id of the incoming event
+        const sender = findParticipantbyId(participants, socket.id);
+        const expectedMessage = sender.participantExpectedXORValue();
+        if(participantMessage === expectedMessage) {
+            sender.roundMessage = participantMessage;
+        } else {
+            if (rounds[currentRoundIndex].didSomeoneSendMessage) {
+                sender.roundMessage = expectedMessage;
+                /* add participants to list of rejected participants. These will be notified of the rejection when all the round responses are received on the sever. */
+                rejectedParticipants = [...rejectedParticipants, sender];
+            } else {
+                sender.roundMessage = participantMessage;
+                rounds[currentRoundIndex].didSomeoneSendMessage = true;
+                // make this sender, the message sender for this round
+                messageSender = sender;
+            }
+        }
+    }
+\end{lstlisting}
+
+This mechanism is employed in necessary only in the \lstinline{handleVotingRoundParticipantResponse} round. After the the winner of the voting round is established, other non-sender clients are not given the possibility to send their specific message back, and the XOR of their two secret keys is automatically sent back to the server. Therefore, the collision detection mechanism is not strictly necessary for the other type of rounds, however, it is still present in the handlers so as to address the case in which a user would try to change values manually inside the storage of the browser.
+
+
+\subsection{Helper hover notes}
+Since the protocol may be a bit confusing for a new learner, short helper messages have been included in the application (figure \ref{fig:helperMessageExample}). These can be enabled/disabled from the controls dropdown provided in the right corner of the simulator (figure \ref{fig:controlsDropdown}). In addition, since the messages are displayed by hovering on the relevant question mark icon and the simulation has an automatic scroll, the user can also disable the scrolling functionality.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.70\textwidth]{Images/Implementation/controlsDropdown.png}
+    \caption{Dropdown controls to show helper message icons}
+    \label{fig:controlsDropdown}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.50\textwidth]{Images/Implementation/helperMessageExample.png}
+    \caption{Example of helper message on hover}
+    \label{fig:helperMessageExample}
+\end{figure}
+
+
 
 
 \section{Unit Testing}
-As previously mentioned, unit testing is the execution of tests on small parts of the codebase, usually one function at a time. This happens by running a given function with some chosen input and comparing the expected output with the actual output. 
+Unit testing is the execution of tests on small parts of the codebase, usually one function at a time. This happens by running a given function with some chosen input and comparing the expected output with the actual output. 
 
-Not only unit testing has the main purpose of checking the correct execution of the logic of your application, but it also helps to break down the codebase into separate functions, each one with its specific purpose, since it would otherwise be difficult to test.
+Not only unit testing has the main purpose of checking the correct execution of the logic of the application, but it also helps to break down the codebase into separate functions, each one with its specific purpose, since it would otherwise be difficult to test them.
 
-
+The framework Mocha with help of Chai assertion library (see section \ref{sec:testingFrameworks}) were used. The tests are included in the source code in \lstinline{./test/test.js}.
 
 \section{Implementation roadblocks}
 

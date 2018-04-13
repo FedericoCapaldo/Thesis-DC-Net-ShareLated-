@@ -54,8 +54,7 @@ Functional requirements describe the actual features to be implemented:
     \item BFUN9 - Implement the XOR function on the client-side to generate the round response to be sent to server;
     \item BFUN10 - Implement the XOR function on the server-side to generate the final round result;
     \item BFUN11 - Enable server to broadcast the final round result of the protocol execution to all clients;
-    \item BFUN12 - Provide help messages to the user to give additional information on the protocol execution;
-    \item BFUN13 - If less than three users are connected to the network, inform each participant how many nodes are currently in the network;
+    \item BFUN12 - If less than three users are connected to the network, inform each participant how many nodes are currently in the network;
 \end{enumerate}
 
 \subsubsection{Non-Functional Requirements}
@@ -103,7 +102,7 @@ These three phases will rerun in the same order continuously, and the message se
 \begin{enumerate}
     \item AFUN1 - Support an arbitrary number of participants in the network (instead of just three);
     \item AFUN2 - Repeat rounds of communication continuously;
-    \item AFUN3 - Implement 8-bit keys to exchange longer messages (key range 0-255);
+    \item AFUN3 - Implement longer secret keys;
     \item AFUN4 - Detect multiple senders in the same round to avoid message collisions;
     \item AFUN5 - Divide communication into three types of rounds: voting, length-calculation, communication rounds to be implemented in this order (explained in the design section \ref{sec:designLongMessages});
     \item AFUN6 - Reject clients that did not win the voting round to avoid message collisions in communication rounds;
@@ -112,7 +111,7 @@ These three phases will rerun in the same order continuously, and the message se
     \item AFUN9 - Convert each letter of the message provided by the message sender client into the corresponding ASCII characters;
     \item AFUN10 - At the termination of communication rounds, display the aggregate message that the user received;
     \item AFUN11 - Prevent the message sender to win the next voting round, so as to ensure a degree of fairness in the network usage;
-    \item AFUN12 - Handle all cases of user connection and disconnection during the execution of the protocol so as to avoid unexpected values from the server's XOR calculations for the round results;
+    \item AFUN12 - Provide help messages to the user to give additional information on the protocol execution;
 \end{enumerate}
 
 \subsubsection{Non-functional Requirements}
@@ -124,9 +123,9 @@ These three phases will rerun in the same order continuously, and the message se
 \subsubsection{Security Requirements}
 In addition to the basic security requirements. The following will also be necessary:
 \begin{enumerate}
-    \item ASEC1 - Abort communication when the message sender disconnects from the network;
-    \item ASEC2 - Abort communication if all participants try to send a message in the same round;
-    \item ASEC3 - Keep track of participants secret keys on the DC-Net server in order to detect collisions throughout the upcoming communication rounds;
+    \item ASEC1 - Keep track of participants secret keys on the DC-Net server in order to detect collisions throughout the upcoming communication rounds;
+    \item ASEC2 - Abort communication when the message sender disconnects from the network;
+    \item ASEC3 - Abort communication if all participants try to send a message in the same round;
     \item ASEC4 - Synchronize clients' responses for the length-calculation round to avoid the uncovering of the message sender;
     \item ASEC5 - Implement a three-digit key range (100-999) for the length calculation round to ensure hiding of message length (otherwise message sender would be easily spotted if all generated keys were close to 0 and shorter than the message length).
 \end{enumerate}
@@ -164,7 +163,7 @@ This sections draws upon the listed requirements to delve deeper into \emph{how}
 
 
 \endlastfoot
-BFUN1 & Allow a user to connect to the DC-Net Service (the server); & Implement a client-server architecture with node.js and express.js to serve static files.\\ 
+BFUN1 & Allow a user to connect to the DC-Net Service (the server); & Implement a client-server architecture with node.js and express.js to serve web pages.\\ 
 \hline
 BFUN2 & Enable real-time communication among clients and server; & Implemented socket.io real-time event-based library to handle communication between clients/server and client.\\
 \hline
@@ -186,9 +185,7 @@ BFUN10 & Implement the XOR function on the server-side to generate the final rou
 \hline
 BFUN11 & Enable server to broadcast the final round result of the protocol execution to all clients; & Immediately after computing the round's result, allow server to broadcast the real message.\\
 \hline
-BFUN12 & Provide help messages to the user to give additional information on the protocol execution; & Implement question mark icons next to the relevant message parts. Display a detailed message when hovering on the icon.\\
-\hline
-BFUN13 & If less than three users are connected to the network, inform each participant how many nodes are currently in the network; & At each connection update the number of nodes needed to start connection, so that a user has a hint of why the communication rounds may have not started.\\
+BFUN12 & If less than three users are connected to the network, inform each participant how many nodes are currently in the network; & At each connection update the number of nodes needed to start connection, so that a user has a hint of why the communication rounds may have not started.\\
 \end{longtable}
 
 
@@ -258,7 +255,7 @@ BNFUN5 & Slow down the computer speed in the protocol execution in order to allo
 \endlastfoot
 BSEC1 & Implement the key generation process on the centralized DC-Net in a cryptographically secure manner; & Implement a random generator that is cryptographically secure. Main options are node.js basic package \textit{crypto} or the npm library \textit{csprng}\\
 \hline
-BSEC2 & Implement the key exchange over a secure communication channel; & As this is a web application, the only proper manner to secure the channel is to implement a \textit{SSL} (Secure Socket Layer) connection and to reject any \textit{http} (plain text) request.\\
+BSEC2 & Implement the key exchange over a secure communication channel; & As this is a web application, securing a communication channel entails making use of \textit{https} protocol to connect to the server and to redirect any \textit{http} (plain text) request to https.\\
 \hline
 BSEC3 & Abort communication if less than three participants are present; & Implement special broadcast event that resets keys and other information on the clients' browser in order to stop the connection immediately. Use such event when, on a client disconnection event, there are less than three active connections.\\
 \hline
@@ -293,29 +290,30 @@ BSEC5 & Ensure that server employs broadcast/multicast events as often as possib
 \hline\hline
 
 \endlastfoot
-AFUN1 & Support an arbitrary number of participants in the network (instead of just three); & .\\ 
+AFUN1 & Support an arbitrary number of participants in the network (instead of just three); & Allow more incoming connections to the server and implement control flow in the connection and disconnection handlers to ensure that the correctness of the protocol is preserved when at all times.\\ 
 \hline
-AFUN2 & Repeat rounds of communication continuously; & .\\
+AFUN2 & Repeat rounds of communication continuously; & After the server completes the protocol execution invoke the function that starts the protocol again. In addition, ensure that all values (e.g. keys) of previous round are cleared both on the clients and the server.\\
 \hline
-AFUN3 & Implement 8-bit keys to exchange longer messages (key range 0-255); & .\\
+AFUN3 & Implement longer secret keys; & Implement keys in range of 0-1 for voting round, 100-999 for length calculation round; 0-255 for communication rounds. Employ a cryptographically secure method for each of these key generation.\\
 \hline
-AFUN4 & Detect multiple senders in the same round to avoid message collisions; & .\\
+AFUN4 & Detect multiple senders in the same round to avoid message collisions; & Store secret keys on the server and implement control flow to check if any participants has sent a message during a key round.\\
 \hline
-AFUN5 & Divide communication into three types of rounds: voting, length-calculation, communication rounds to be implemented in this order; & .\\
+AFUN5 & Divide communication into three types of rounds: voting, length-calculation, communication rounds to be implemented in this order; & create specialized functions that enable the execution of the different types of round.\\
 \hline
-AFUN6 & Reject clients that did not win the voting round to avoid message collisions in communication rounds; & .\\
+AFUN6 & Reject clients that did not win the voting round to avoid message collisions in communication rounds; & Log on the server the list of participants that tried to send a message in the voting round but were not successful. When all response are received, notify them of the rejection.\\
 \hline
-AFUN7 & Allow user that won the voting round (i.e. message sender) three attempts to provide their own text message in the length calculation round; & .\\
+AFUN7 & Allow user that won the voting round (i.e. message sender) three attempts to provide their own text message in the length calculation round; & Display textbox on message sender's interface to input message, and once provided store it locally on the client's browser.\\
 \hline
-AFUN8 & Enable the DC-Net server to create a number of secret keys in bulk, to be shared with the clients before the communication rounds start; & .\\
+AFUN8 & Enable the DC-Net server to create a number of secret keys in bulk, to be shared with the clients before the communication rounds start; & employ in-build crypto JavaScript module to create an array of cryptographically secure pseudo random numbers of the desired length. \\
 \hline
-AFUN9 & Convert each letter of the message provided by the message sender client into the corresponding ASCII characters; & .\\
+AFUN9 & Convert each letter of the message provided by the message sender client into the corresponding ASCII characters; & During the computation of a communication round, employ JavaScript built-in string functions to convert a character to its corresponding ASCII value and vice versa.\\
 \hline
-AFUN10 & At the termination of communication rounds, display the aggregate message that the user received; & .\\
+AFUN10 & At the termination of communication rounds, display the aggregate message that the user received; & Store the result of each communication round locally so that a client can display the whole sentence received.\\
 \hline
-AFUN11 & Prevent the message sender to win the next voting round, so as to ensure a degree of fairness in the network usage; & .\\
+AFUN11 & Prevent the message sender to win the next voting round, so as to ensure a degree of fairness in the network usage; & record on the client's browser state that a message was previously sent, and display a message accordingly instead of the choice dialog. \\
 \hline
-AFUN12 & Handle all cases of user connection and disconnection during the execution of the protocol so as to avoid unexpected values from the server's XOR calculations for the round results; & . \\
+AFUN12 & Provide help messages to the user to give additional information on the protocol execution; & Implement question mark icons next to the relevant message parts. Display a detailed message when hovering on the icon.\\
+\hline
 \end{longtable}
 
 
@@ -345,9 +343,9 @@ AFUN12 & Handle all cases of user connection and disconnection during the execut
 \hline\hline
     
 \endlastfoot
-ANFUN1 & Increase user-friendliness with some front-end functionalities that empower the user in his learning experience; & .\\
+ANFUN1 & Increase user-friendliness with some front-end functionalities that empower the user in his learning experience; & Alongside the helpful messages feature of AFUN12, enable autoscroll of the simulator interface, and create a small control panel to enable both help message icons and autoscroll.\\
 \hline
-ANFUN2 & Allow longer and different types of time intervals between the various stages of communication to ensure that the simulation is understandable; & .\\
+ANFUN2 & Allow longer and different types of time intervals between the various stages of communication to ensure that the simulation is understandable; & Implement setTimeout and setInterval wrapper functions around the beginning of the main events, such as a new round or protocol restart after abortion.\\
 \end{longtable}
 
 
@@ -376,13 +374,13 @@ ANFUN2 & Allow longer and different types of time intervals between the various 
 \hline\hline
 
 \endlastfoot
-ASEC1 & Abort communication when the message sender disconnects from the network; & .\\
+ASEC1 & Keep track of participants secret keys on the DC-Net server in order to detect collisions throughout the upcoming communication rounds; & At the time of key generation, store keys in the participant objects; and use compare the XOR of the participant's keys against his round response. \\
 \hline
-ASEC2 & Abort communication if all participants try to send a message in the same round; & .\\
+ASEC2 & Abort communication when the message sender disconnects from the network; & include a control flow check in the disconnection handler to identify if the disconnecting client is the message sender and act accordingly.\\
 \hline
-ASEC3 & Keep track of participants secret keys on the DC-Net server in order to detect collisions throughout the upcoming communication rounds; & . \\
+ASEC3 & Abort communication if all participants try to send a message in the same round; & record if at least one participant did not try to send a message in his round response and employ a control flow check before the publication of the voting round result.\\
 \hline
-ASEC4 & Synchronize clients' responses for the length-calculation round to avoid the uncovering of the message sender; & .\\
+ASEC4 & Synchronize clients' responses for the length-calculation round to avoid the uncovering of the message sender; & trigger a 10 second timer when each client received the length-calculation round keys, so that the interval to dispatch the round response event will be equal for all clients.\\
 \hline
-ASEC5 & Implement a three-digit key range (100-999) for the length calculation round to ensure hiding of message length (otherwise message sender would be easily spotted if all generated keys were close to 0 and shorter than the message length); & .\\
+ASEC5 & Implement a three-digit key range (100-999) for the length calculation round to ensure hiding of message length; & Provide different minimum and maximum parameters for the csprng.\\
 \end{longtable}
