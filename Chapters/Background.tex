@@ -1,6 +1,6 @@
 \chapter{Background Research and Literature Review}
 
-In Information Security, anonymity can be a difficult notion to conceptualize. This chapter begins by introducing two different aspects of anonymity so as to place this study in context. Next, it follows an in depth description of the Dining Cryptographers protocol, the main focus of the thesis, starting from a theoretical standpoint and ending with practical considerations for the suggested implementation. Lastly, the chapter will outline the current state of art of DC-Net implementations.
+In Information Security, anonymity can be a difficult notion to conceptualize. This chapter begins by introducing two different aspects of anonymity so as to place this study in context. Next, it follows an in depth description of the Dining Cryptographers protocol, the main focus of the chapter, starting from a theoretical standpoint and ending with practical considerations for the suggested implementation. Lastly, the chapter will outline the current state of art of DC-Net implementations.
 
 \section{What is Anonymity}
 Generally speaking, the definition of anonymity is presented as a "lack of outstanding, individual, or unusual features." \cite{Anonymity}. In Information Security, anonymity is a security goal a system may want to achieve. Attaining such security property means that it is infeasible to hold a principal accountable for an anonymous action. In other words, anonymity prevents any principal from identifying another principal performing an action within an anonymous network \cite{Malkhi}.
@@ -77,7 +77,7 @@ To simplify the understanding of the underlying techniques of the protocol to th
 Three cryptographers decide to dine at a restaurant. At the end of the meal, the waiter informs the table that the bill has already been paid anonymously. The arrangement might have been made by one of the three dining cryptographers or by their employer, the National Security Agency (the NSA). The diners respect each other's privacy to pay anonymously, but they are interested to know if the payer is at the table or if indeed it was their employer. In order to determine the answer, they execute the following three phases \cite{Chaum}:
 \begin{enumerate} \label{sec:protocolStages}
     \item Every cryptographer has one neighbour sitting on his left and one of his right. Each cryptographer tosses an unbiased coin behind a menu between him and his right neighbour so that the third participant cannot see the outcome (Figure \ref{fig:dcstage1}). At this point, each cryptographer can see the result of two coin flips, the one he flipped with his right neighbour and the one that his left neighbour flipped with him (Figure \ref{fig:dcstage2}). 
-    \item Subsequently, each cryptographer states out loud whether the two coins have the same value (two heads or two tails) or otherwise (Figure \ref{fig:dcstage3}). If the cryptographer paid for the dinner, he lies about the result of the coins and says the exact contrary of what he sees.
+    \item Subsequently, each cryptographer states out loud whether the two coins have the same value (two heads or two tails) or otherwise (Figure \ref{fig:dcstage3}). If the cryptographer paid for the dinner, he lies about the result of the coins and says the exact contrary of what he sees, i.e. he flips his response.
     \item Finally, all the results of the three cryptographers are combined in order to find the truth about who paid. An even number of "Different" means that the NSA paid for the dinner, and odd number of "Different" means that one of the cryptographers at the table paid for the dinner.
 \end{enumerate}
 
@@ -102,7 +102,7 @@ Three cryptographers decide to dine at a restaurant. At the end of the meal, the
     \label{fig:dcstage3}
 \end{figure}
 
-To sum up, if one of the three cryptographers at the table paid for the meal, neither of the two non-paying cryptographers would gain any additional information about who, between the two other participants other than himself, might be the payer. This is because each participant does not know the outcome of the third coin flip between the other two participants.  Such is the explanation of how sender anonymity is guaranteed in the Dining Cryptographers protocol. 
+To sum up, if one of the three cryptographers at the table paid for the meal, neither of the two non-paying cryptographers would gain any additional information about who, between the two other participants other than himself, might be the payer. This is because each participant cannot know the outcome of the third coin flip between the other two participants.  Such is the explanation of how sender anonymity is guaranteed in the Dining Cryptographers protocol. 
 
 Importantly, Chaum also proves how sender anonymity within this protocol is unconditionally secure in theory \cite{Chaum}. This property of the protocol makes it fascinating as it means that untraceability holds in all possible scenarios within the network.  We turn now to present how this is the case. 
 
@@ -210,6 +210,11 @@ The mathematical properties of the XOR operation are also very relevant for DC-N
     \item \textit{Self-Inverse:} Any value XOR'd twice will cancel itself. In other words, a value XOR's with itself is equal zero. $A \oplus A = 0$
 \end{enumerate}
 
+\subsection{Proof of correctness with XOR} \label{sec:xorDemonstration}
+Based on the XOR properties outline above, this section explains why this logical operation allows a participant to share a message anonymously.
+
+
+
 \subsubsection{Exchange of one-bit messages with \textit{3} participants}
 The following is the scenario and procedure of the protocol executed with the minimum number of three participants and expressed with a more formal notation (examples in figure \ref{fig:dcFormalnoMessage} and \ref{fig:dcFormalWithMessage}) :
 \begin{enumerate}
@@ -280,7 +285,14 @@ The basic protocol is presented with specific message length (one-bit messages) 
 To extend the applicability of Chaum's protocol, we can consider more participants and more complex messages within the network as per below.
 
 \subsection{Increase number of participants} \label{sec:participantsextention}
+The overall benefit of multiple participants, meaning more than three, within a network is twofold:
+\begin{enumerate}
+    \item it allows to adopt the protocol to a real-world scenario as it is unreasonable to have a network with only three nodes;
+    \item growing the number of participants increases the level on anonymity, as explained in section \ref{sec:anonymityset};
+\end{enumerate} 
+
 The basic protocol can be generalized to accommodate \textit{n} participants (more than 3) with two different topologies.
+
 
 \subsubsection{Ring Topology} \label{sec:ringtopology}
 One of the two methods to extend the protocol to multiple payers is very similar to the one presented up to this point. Each vertex will have only two edges, one with each neighbour, and the protocol follows the same rules, as showed in figure \ref{fig:nparticipants1}.
@@ -326,51 +338,53 @@ More formally speaking:
 \end{figure}
 
 
-Each approach presents advantages over the other. A ring topology uses less computational power therefore presents less overhead, as explained in section \ref{sec:complexitylimitation}, while a full-mesh topology can be considered more secure against collusion of participants, explained in section \ref{sec:disruptionlimitation}.
-The overall benefit of multiple participants within a network is twofold:
-\begin{enumerate}
-    \item adapting the protocol to a real-world scenario as it is unreasonable to have a network with only three nodes;
-    \item growing the number of participants increases the level on anonymity as explained in section \ref{sec:anonymityset}; \newline \newline
-\end{enumerate} 
+Both approaches present relative advantages over the other. A ring topology presents less overhead, while a full-mesh topology offers more security against the limitation of participants' collusion \cite{Franck}.
+
 
 \subsection{Extend message length}
 
 Accommodating many participants makes the protocol more suitable for a real application. So does the possibility of sending longer messages. Increasing the length of messages to more than one bit may have two possible meanings: (1) to send different keys that are longer than one bit or (2) to repeat the round multiple times in order to gather pieces of the same message.
 
 \subsubsection{Keys longer than one bit} \label{sec:longerKeys}
-The range of possible keys can be incremented by growing the number of bits in a key. If the keys are, for example, 8-bit long, the possible randomly generated value of a key can be anything between 0 and 255 ($2^8$), as opposed to a 1-bit key where values can only be 0 or 1 ($2^1$) \cite{Scholz}. A 1-bit key network allows a sender cryptographer to XOR his two secret keys with a 0 or 1, which corresponds to flipping a message (see section \ref{}). A 8-bit key network allows the sender cryptographer to XOR his two secret keys with a value, i.e. anonymous message, that can be anything between 0-255 as the range of the key. An example is provided in figure \ref{fig:xorlongkeys}.
+The range of possible keys can be incremented by growing the number of bits in a key. If the keys are, say, 8-bit long, the possible randomly generated value of a key can be anything between 0 and 255 ($2^8$), as opposed to a 1-bit key where values can only be 0 or 1 ($2^1$) \cite{Scholz}. A 1-bit key network allows a sender cryptographer to XOR his two secret keys with a 0 or 1. Whereas, a 8-bit key network allows the sender to XOR his two secret keys with a chosen value, that can be anything between 0-255, which corresponds to the range of the keys ($2^8$).
 
-\begin{figure}[h!]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.95\textwidth]{Images/dcnet8bitkeys.png}
     \caption{Three participants round with 8-bit keys}
     \label{fig:xorlongkeys}
 \end{figure}
 
-Adopting longer keys can be useful. Take, for example, the ASCII character encoding, a technique to represent a character (e.g. a number, symbols or letters) has a corresponding number. The official ASCII encoding contains 128 characters, and the extended version has 256 of them, which can therefore represented in 8 bits ($2^8$). Therefore, a cryptographer wanting to send a specific letter may simply XOR his two secret keys with the ASCII number that represents the said letter.
+Figure \ref{fig:xorlongkeys} provides an example of three participants using 8-bit keys. Participant P1 wishes to send the message '97'. To do so, he performs the XOR of his two secret keys, 237 and 66, and message, 97, altogether. The result that he will announce is 206 ($237 \oplus 66 \oplus 97$). The other two participants P2 and P3 simply announce the XOR of their two secret keys as they do not wish to send a message. The final XOR of the round responses of each participant will reveal the hidden message.
 
 
 \subsubsection{Multiple Rounds} \label{sec:messageExtentionRounds}
-An alternative to sending longer messages is to repeat the protocol multiple times. The repetition allows a node to send multiple messages in a row, either with a 1-bit key or in conjunction with the long-key technique explained in the previous section. By repeating the protocol multiple rounds, a cryptographer can broadcast a cumulative message that might be more meaningful that a single round of communication.
+An alternative to send messages longer than 1 bit is to repeat the protocol multiple times. The repetition allows a node to send multiple messages in a row, either with a 1-bit key or in conjunction with the long-key technique explained in the previous section. By repeating the protocol multiple rounds, a cryptographer can broadcast a cumulative message that might be more meaningful that a single round of communication. \newline
+
+To sum up, I have explained the main limitations and extensions of the basic protocol. In chapter \ref{chapter:requirements}, I present which specific limitations I address and propose a solution to. I will describe which extensions I adopt in the simulator.
+
+\section{From Theory to Practise: Considerations}
+Chaum acknowledges some practical issues when implementing this protocol which, in theory, provides flawless sender and recipient anonymity.
+
+As we have seen in section \ref{sec:protocolStages}, the Dining Cryptographers protocol tries to jointly compute the result of a procedure carried out from nodes located in different spaces. The type of security protocols executing an algorithm in such a distributed fashion is a sub-field of cryptography named 'secure multi-party computation' \cite{wiki1}.
+
+The fact that nodes do not reside in the same physical location has some important repercussions to the protocol's execution. Three of these are (1) different weaknesses associated with the respective network topology chosen, (2) the method of generation or transmission of the secret one-time keys to each node and (3) the strategy to address collisions.
+
+\subsection{Possible Network Topologies} \label{sec:networkTopologies}
+There are two main network topologies that can be used in order to implement a DC-Net: peer-to-peer an client-server. The network topology is not to be confused with the key-exchange topologies presented in section \ref{sec:participantsextention}.
 
 
-
-\section{Practical Considerations}
-As we have discussed, the Dining Cryptographers protocol tries to jointly compute the result of a function from different nodes. Such type of protocol is a specific sub-field of cryptography called 'secure multi-party computation' \cite{wiki1}. 
-
-The fact that nodes do not reside in the same physical location, adds further complications to the scenario, such as the network topology used to implement the protocol, the implications of the distributed architecture over the protocol's computation and the method of transmission of the secret one-time keys  to each node.
-
-(What network topology is it used to implement this protocol? 
-
-What implication has the distributed architecture over the protocol computation? 
-
-As DC-Net relies on confidential one-time keys, how does such secret reach each node?)
-
-\noindent \newline These practical issues are addressed in this section to start considering what are the repercussions of implementing a protocol that, in theory, provides flawless sender anonymity.
+\subsubsection{Peer-to-Peer} \label{sec:peertopeer}
+If someone chooses the peer-to-peer topology, a node communicates directly with the other participants in the network. Given the absence of a central server, this setting requires each node to handle the key generation process, the information exchange with each client, and the final result calculation.
+The main implication of adopting this topology is that there is no mechanism to detect collisions by the participants, with the exception of the message sender, as described in the upcoming section \ref{sec:detectCollisions}. 
 
 
-\subsection{Key Exchange Channels} \label{sec:keyExchangeMethods}
-A fundamental problem in cryptography to ensure the effectiveness of a protocol is how to exchange keys securely. The DC-net is no exception: in order to guarantee the anonymity of the senders and recipient in the network, the single part of communication that needs to be securely completed is the exchange of the keys.
+\subsubsection{Client-Server} \label{sec:clientserver}
+Unlike the peer-to-peer topology, a client-server structure decreases the responsibilities of a node due to the existence of a centralized DC-net service. A centralized server has a much more complete vision of the network in respect to a node. This fact offers the DC-Net various capabilities such as detecting collisions efficiently, which the pee-to-peer is unable to. However, the existence of the server introduces the issue of \emph{trust}. The cryptographers have to believe that the server is a non-malicious entity facilitating the communication. Moreover, since the server generates keys for all participants, if someone has access to the server, the protocol could be completely compromised.
+
+
+\subsection{Key Generation and Transmission} \label{sec:keyExchangeMethods}
+A critical aspect of cryptography is to ensure the keys are exchanged securely so as to guarantee the effectiveness of a protocol. The DC-net is no exception: to guarantee the anonymity of the senders and recipient in the network, the generation and exchange of keys need to be securely accomplished.
 
 \subsubsection{Physical Disks}
 In its original paper, Chaum proposes the exchange of physical optical disks that with today's storage capabilities can provide trillions of randomly-generated bits to be used as keys \cite{Chaum}. However, this is impractical for real-world applications, especially for large networks. 
@@ -386,24 +400,14 @@ Lastly, a practical alternative is to use public-key cryptography. The most comm
 \end{enumerate}
 
 
-\subsection{Possible Network Topologies} \label{sec:networkTopologies}
-There are two main network topologies that can be used in order to implement a DC-Net: peer-to-peer an client-server. The network topology is not to be confused with the key-exchange topologies presented in section \ref{sec:participantsextention}.
+\subsection{Detecting Collisions} \label{sec:detectCollisions}
+If message collisions are not addressed it is impossible to extrapolate a meaningful message shared by a sender, because messages overlap in the same round of communication. This is one of the three implications of implementing this protocol. \newline
 
-\subsubsection{Peer-to-Peer} \label{sec:peertopeer}
-This topology resembles closely the description of the protocol so far, in which a node communicates directly with his neighbours or with all participants in the network. This setting requires nodes to handle the whole of the communication, key generation, and broadcast.
-Peer-to-peer does not provide a mechanism to detect collisions efficiently, since each nodes cannot know if neighbours are sending their correct responses or if they are adding a message to their broadcast.
+In a DC-Net implementation without a server to coordinate the network, the collisions would be detected only by the actual message senders. If a node transmits a message and the final result is that no one sent a message, this is the only case in which a sender is able to detect that a collision occurred. Chaum tries, but fails, to address this issue. The only naive workaround proposed is that the same node can try to retransmit after a random number of rounds \cite{Chaum}. \newline
 
 
-\subsubsection{Client-Server} \label{sec:clientserver}
-A client-server topology decreases the responsibilities of a node given the presence of a centralized DC-net service. Plus, the server has a much more complete vision of the network in respect to a node. \emph{This is a very contradictory factor}. On one hand, it offers the DC-Net various capabilities such as detecting collisions efficiently, generating keys, helping the clients broadcast messages at the same time. On the other hand, it introduces issue of \emph{trust}. The clients are supposed to believe that the server is a non-malicious entity that will facilitate the communication. In addition, if someone has access to the server and this is the place where the keys are generated, the protocol would be completely compromised.
-
-\subsection{Detecting Collisions}
-The protocol's limitation of potential collisions is to be addressed in order to transmit useful messages. Without such feature the protocol would be secure but useless. \newline
-
-A DC-Net implementation that does not possess a DC-net central entity to coordinate the network, the collisions would be detected only by the actual message senders. For example, in a one-bit key message exchange, if a node transmits a message and the final broadcast results in no one having sent a message, then the node can deduct the presence of an even number of message senders in this given round. To tackle this issue, the said node can retransmit after a random number of communications rounds. \newline
-
-The above collision-detection technique is not effective in a scenario in which a node would like to send a long message across multiple rounds (section \ref{sec:messageExtentionRounds}). This instance demands for an uninterrupted flow of communication without collisions, otherwise the meaning of whole message can be considered affected.
-In this scenario, the only possible solution is to employee a server as central DC-Net service. This entity would be aware of who the message sender is so as to reserve a number of rounds only for that given node.
+In the context of real-world practical application in where it is even more likely to send a long message across multiple rounds (see section \ref{sec:messageExtentionRounds}), Chaum's collision detection technique is clearly unreasonable. 
+A real-world application demands an effective collision detection mechanism, otherwise the the whole message can be considered corrupted. Therefore, the only possible solution is to deploy a server to act as, among other things, a message sender detector.
 
 
 \section{Existing DC-net simulation tools} \label{sec:similarWorks}
@@ -411,11 +415,14 @@ It is important to research the area of interest of a project in the early stage
 
 The Dining Cryptographers protocol is an extensively studied topic addressed by several academic papers. The basic idea proposed by Chaum contains a number of limitations as we have seen in section \ref{sec:limitations}, and various papers propose complex and interesting solutions to solve very specific issues of the protocol (e.g. how to exchange keys securely). The common denominator of all these works is that they are largely theoretical. 
 
-The main purpose of this project is to develop a practical simulation tool for the Dining Cryptographers protocol, and therefore the research of similar works focuses purely on practical implementations and simulations of a DC-Net. As a matter of fact, the outcome of the research of existing tools is the leading motivation for implementing a DC-Net simulator. Namely, while there exists a wealth of academic papers that thoroughly examines the protocol on a theoretical level, there is an easily identifiable gap in the domain of practical software systems that exemplifies the functioning of this protocol.
+
+The main purpose of this project is to bridge theory to practice by developing a simulation tool and reflecting over the implemented work.
+
+The main purpose of this project is to develop a practical simulation tool for the Dining Cryptographers protocol, and therefore the research of similar works focuses purely on practical implementations and simulations of a DC-Net. As a matter of fact, the outcome of the research of existing tools is the leading drive for implementing a DC-Net simulator. While there exists a wealth of academic papers that thoroughly examines the protocol on a theoretical level, there is an easily identifiable gap in the domain of practical software systems that demonstrates the functioning of this protocol.
 
 In addition, the handful of projects found is of little help in deepening the understanding of the protocol since these simulations are mostly command-line tools that, beside the unhelpful user experience, are not well-documented on how to perform even a single round of communication. \newline
 
-Given that  DC Networks are mostly a theoretical concept, researching the wide internet lead exclusively to academic papers. A more sensible approach to find possible implementations is to search through the development platform GitHub. Below are some implementation found, which highlight the shortcomings of the current state of art in DC-Net implementations.
+DC Networks are mostly a theoretical concept, therefore researching the wide internet lead exclusively to academic papers. A more sensible approach to find possible implementations is to search through the development platform GitHub. Below are some implementation found, which highlight the shortcomings of the current state of art in DC-Net implementations.
 
 \subsection{Example 1}
 The first is a command line tool that presents extensive documentation, which appears to be very handy (figure \ref{fig:work1documentation}). However, all the commands listed in the documentation do not work, return errors, and there is no troubleshooting guide (figure \ref{fig:work1error}).

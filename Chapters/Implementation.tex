@@ -1,5 +1,5 @@
 \chapter{Implementation}
-This chapter explores the development phase of the simulator following the outlined design structure. The implementation of the project took place in iterations in order to prioritize features and to decrease the overall complexity of implementing all the requirements at once. The complete source code can be found in Appendix \ref{appendix:code}. Appendix \ref{appendix:userguide} explains how to use the simulation tool, and Appending \ref{appendix:setupguide} explains how to run the code locally.
+This chapter explores the development phase of the simulator following the outlined design structure. The implementation of the project took place in iterations in order to prioritize features and to decrease the overall complexity of implementing all the requirements at once. The complete source code can be found in Appendix \ref{appendix:code}. Appendix \ref{appendix:userGuide} explains how to use the simulation tool, and Appending \ref{appendix:setupguide} explains how to run the code locally.
 
 
 \section{Introducing used Technologies}
@@ -317,7 +317,7 @@ The solution proposed to exchange secret keys securely is to employ secure HTTP 
 This section presents the final implemented system, which includes all the advanced requirements. The codebase is more complex and the features presented are the main additions to the platform presented before.
 
 
-\subsection{Arbitrary number of participants}
+\subsection{Arbitrary number of participants} \label{sec:arbitraryPartipantN}
 To execute the protocol with an arbitrary number of participants is enough to accept all incoming connections, instead of throwing an error when a fourth participant tries to connect, as shown in section \ref{sec:triggerProtocol}. The real challenge of supporting an arbitrary number of participants is to handle connections and disconnection throughout the execution of the protocol. This problem was not present with only three clients, as this was the both the minimum and maximum number of participants in the network, and any variation of participants would simply stop the execution of the protocol. \newline
 
 To support incoming connections during the protocol execution, a participant is added to a list of pending participants, instead of joining the simulation immediately. To improve the user experience, the waiting participants is also informed of such event with a clear message.
@@ -478,7 +478,25 @@ Not only unit testing has the main purpose of checking the correct execution of 
 
 The framework Mocha with help of Chai assertion library (see section \ref{sec:testingFrameworks}) were used. The tests are included in the source code in \lstinline{./test/test.js}.
 
-\section{Implementation roadblocks}
+\section{Implementation challenges}
+Although the architecture of the simulator was not particularly complex, I faced a number of challenges throughout the implementation phase that arose to ensure correctness at all times and preserve constant untraceability. 
+
+\subsection{Protocol execution in real time and distributed across nodes}
+The event-based library \lstinline{socket.io} was chosen for its high-level API and simplicity of use. However, it was important to firstly experiment with this library in order to understand how to integrate the real-time communication with the protocol logic. The main challenge was to discern the different components that should be executed on the client's browser from the parts to be performed on the server.
+
+\subsection{Ensure protocol correctness}
+As mentioned in section \ref{sec:arbitraryPartipantN}, there was a number of issues deriving from allowing an arbitrary number of connection to the server. Dealing with connecting and disconnecting participants during the protocol execution was a problem not though of beforehand that instead arose one of the other. Such as, if the message sender disconnects throughout the communication rounds, abort the communication. However, if a participant wins the voting round before all clients have provided their response, and this disconnects, then instead simply allow remaining clients to win the round. 
+
+\subsection{Retain sync between front-end and back-end state}
+Another important part to reason correctly about the protocol execution from the programmer standpoint was to mimic the state of the server on clients correctly and vice versa. Thus, if there was an update on any of the clients it was important to communicate it, whenever this does not compromise untraceability, to the server so as to be able to have at least a partial synchronization of information between the different principals, which is useful to make safe assumption about which data is available at each stage of the protocol execution.
 
 
 \section{Mapping Theoretical Concepts to Implementation}
+This section has the purpose to recap the correlation between the initial concepts of the analogy and formal protocol with the implemented software. \newline
+
+The exposition of the Dining Cryptographers first started with a number of cryptographers dining at a restaurant. These represented nodes of a graph that in the implemented simulation are represented by users connecting to the DC-Net server through their browser. \newline
+
+The purpose of executing the protocol at the dinner was to find out if someone paid for the dinner or if their employer did so. The actual protocol execution has the purpose to see if someone sent a message, and the final broadcasted result is the message itself. Therefore, paying the dinner corresponds to a node sending a message. In the scenario that uses 1-bit keys, the action of sending a message is also referred to as flipping one's message. In the software implemented, sending a message corresponds to a participant attempting to XOR a chosen value with his two secret keys before sending the result of this operation to the server. \newline
+
+The coin flipped behind a menu is the key-exchange procedure that needs to take place securely, not only in respect to the participants that are not part of the given adjacency but in respect to every possible adversary that on the network. In the simulation, the central DC-Net service generates all keys with a cryptographically secure pseudo-random number generator and delivers them to the clients via \lstinline{https} protocol. \newline
+

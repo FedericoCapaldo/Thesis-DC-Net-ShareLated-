@@ -1,7 +1,30 @@
-\chapter{Design}
+\chapter{Design} \label{chapter:design}
 This chapter of the report has the purpose of presenting the architecture of the DC-Net simulator from different perspectives through the utilization of UML diagram notations. The overview of the system is still an abstract one, but it is an important step to realize a successful implementation. 
 
 Firstly, the architecture diagrams of the application and examples of the event-based communication will be shown. Following, there is a series of sequence diagrams that exemplifies the data flow between clients and server both for the basic implementation of the protocol and the advanced one.
+
+\section{Desgin Choices}
+The simulation will be a real-time web-based application that resembles the dynamics of the Dining Cryptographers. The simulation also attempts to be as faithful as possible to the original protocol to preserve untraceability.
+
+I deem choice of a web application appropriate for three reasons:
+\begin{enumerate}
+    \item From a user perspective, downloading and installing the application and its third-party required components (dependencies) is likely to end up in technical issues. By using a website, the user can focus on learning the protocol rather than having to overcome possible set-up barriers of a native application;
+    \item Building a website entails creating a Graphical User Interface (GUI). This results in a more user-friendly experience in respect to a command line application, often the interface of choice for most of the DC-Net simulations available.
+    \item A live web application allows clients to connect to the DC-Net server over the internet. Such distributed architecture is a realistic implementation of the protocol. This represents an important step forward in comparison to the of the other simulations I found. In fact, as observed in section \ref{sec:similarWorks}, current simulations often employ scripts to emulate all the nodes on the same machine.
+\end{enumerate}
+
+The website will employ a client-server architecture. This design is considered appropriate for the simulation since it offers a farther reach to build complex mechanisms for handling the advanced requirements.
+
+\textbf{It is important to highlight that the software implemented is going to be a \emph{simulation}. The role of the server in the application is seen as a facilitator to exchange messages between clients. Therefore, addressing the trust issue mentioned in section \ref{sec:clientserver} is beyond the scope of this project.}
+
+A ring topology is the key exchange graph employed.
+
+
+To ensure the secure exchange of keys, 
+
+
+\section{Requirements} \label{sec:requirements}
+The requirements section, first, informally introduces what the software is going to accomplish, then, it formally lists the results that the simulation is expected to achieve.
 
 
 \section{System Architecture}
