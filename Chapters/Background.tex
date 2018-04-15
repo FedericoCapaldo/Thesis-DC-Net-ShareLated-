@@ -411,18 +411,14 @@ A real-world application demands an effective collision detection mechanism, oth
 
 
 \section{Existing DC-net simulation tools} \label{sec:similarWorks}
-It is important to research the area of interest of a project in the early stages of a piece of work in order to understand the current state of the art, draw inspiration, and determine possible areas of improvement of the matter considered.
 
-The Dining Cryptographers protocol is an extensively studied topic addressed by several academic papers. The basic idea proposed by Chaum contains a number of limitations as we have seen in section \ref{sec:limitations}, and various papers propose complex and interesting solutions to solve very specific issues of the protocol (e.g. how to exchange keys securely). The common denominator of all these works is that they are largely theoretical. 
+The Dining Cryptographers protocol is an extensively studied topic, where researchers have primarily focused on abstract analyses. Various papers focus on solutions to solve specific limitations of Chaum's basic protocol. The common denominator of all these works is that they are largely theoretical. 
 
+While there is a plethora of conceptual analyses, it is safe to say that there is a gap in the domain of practical simulations. It is well known that the protocol as presented by Chaum is impractical. This may account for the shortage of simulations. Moreover, the handful of projects found is of little help in furthering the understanding of the protocol since these simulations are mostly command-line tools that, beside the unhelpful user experience, are not well-documented on how to perform even a single round of communication.
 
-The main purpose of this project is to bridge theory to practice by developing a simulation tool and reflecting over the implemented work.
+The scarcity and defective state of accessible simulations is the leading drive of my project. I now turn to briefly review existing works that demonstrates the state of affairs of available simulations. \newline
 
-The main purpose of this project is to develop a practical simulation tool for the Dining Cryptographers protocol, and therefore the research of similar works focuses purely on practical implementations and simulations of a DC-Net. As a matter of fact, the outcome of the research of existing tools is the leading drive for implementing a DC-Net simulator. While there exists a wealth of academic papers that thoroughly examines the protocol on a theoretical level, there is an easily identifiable gap in the domain of practical software systems that demonstrates the functioning of this protocol.
-
-In addition, the handful of projects found is of little help in deepening the understanding of the protocol since these simulations are mostly command-line tools that, beside the unhelpful user experience, are not well-documented on how to perform even a single round of communication. \newline
-
-DC Networks are mostly a theoretical concept, therefore researching the wide internet lead exclusively to academic papers. A more sensible approach to find possible implementations is to search through the development platform GitHub. Below are some implementation found, which highlight the shortcomings of the current state of art in DC-Net implementations.
+Researching the wide internet for simulations has proved unsuccessful as this leads to academic papers. A more sensible approach to find possible implementations had been to search through the development platform GitHub. Below are some implementation found, which highlight the shortcomings of the current state of art in DC-Net implementations.
 
 \subsection{Example 1}
 The first is a command line tool that presents extensive documentation, which appears to be very handy (figure \ref{fig:work1documentation}). However, all the commands listed in the documentation do not work, return errors, and there is no troubleshooting guide (figure \ref{fig:work1error}).

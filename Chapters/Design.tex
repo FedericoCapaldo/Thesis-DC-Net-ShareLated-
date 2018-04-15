@@ -1,10 +1,16 @@
 \chapter{Design} \label{chapter:design}
-This chapter of the report has the purpose of presenting the architecture of the DC-Net simulator from different perspectives through the utilization of UML diagram notations. The overview of the system is still an abstract one, but it is an important step to realize a successful implementation. 
+This chapter of the report has the purpose of presenting the architecture of the DC-Net simulator from different perspectives through the utilization of UML diagram notations.
 
-Firstly, the architecture diagrams of the application and examples of the event-based communication will be shown. Following, there is a series of sequence diagrams that exemplifies the data flow between clients and server both for the basic implementation of the protocol and the advanced one.
+Firstly, I explain the reasons behind the design choices taken. Secondly, the architecture of the simulator is presented, also showing an example of how the event-based communication happens. Lastly, there is a series of sequence diagrams that exemplifies the data flow between clients and server both for the basic implementation of the protocol and the advanced one. \newline
 
-\section{Desgin Choices}
+Throughout the chapter some of the technologies are named, which will be presented in the implementation section (chapter \ref{chapter:implementation}).
+
+
+\section{Design Choices}
+Throughout the project, a number of decisions about the design of the simulator architecture were taken. This sections gi
+
 The simulation will be a real-time web-based application that resembles the dynamics of the Dining Cryptographers. The simulation also attempts to be as faithful as possible to the original protocol to preserve untraceability.
+
 
 I deem choice of a web application appropriate for three reasons:
 \begin{enumerate}
@@ -23,12 +29,23 @@ A ring topology is the key exchange graph employed.
 To ensure the secure exchange of keys, 
 
 
-\section{Requirements} \label{sec:requirements}
-The requirements section, first, informally introduces what the software is going to accomplish, then, it formally lists the results that the simulation is expected to achieve.
+
+
+\subsection{Collision warning necessity}
+Moreover, I set up a collision detection warning, which is a notification sent by the server only to the participants who attempted but failed to win a voting round. 
+
+This mechanism has been implemented to avoid the necessity to send a unicast 'success' notification to the winning participant of the voting round, which would obviously uncover who the message sender is to a potential eavesdropper.
+
+
+self-declared status. 
+A participant trying to win the voting round automatically declares himself the message sender on his browser, as if he were successful in the round. 
+
+
+In fact, if all participants tried to win the voting round the communication is aborted.
 
 
 \section{System Architecture}
-The architecture of the simulator is simple.  
+The architecture of the simulator is simple. Only server and client are present in the picture and there is no persistent data to be stored in a database. The communication between back-end and front-end happens through socket.io events.
 
 \begin{figure}[H]
     \centering
@@ -36,6 +53,7 @@ The architecture of the simulator is simple.
     \caption{System Architecture}
     \label{fig:systemArchitecture}
 \end{figure}
+
 
 
 \section{Minimal Distributed Architecture}
