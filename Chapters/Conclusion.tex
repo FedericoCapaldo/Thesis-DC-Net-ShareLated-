@@ -5,6 +5,11 @@ The aim of this project was to create a simulation tool for a Dining Cryptograph
 
 As a consequence of meeting these challenges, my contributions are: a proposal of diving the communication in voting, length-calculation and communication round (instead of voting and communication rounds); detecting collision by storing secret keys on the server; using 8-bit keys that allow a message to be any number from 0 to 255, which allows to interpret an anonymously shared message with the ASCII encoding standard in order to share useful human-readable messages. In addition, also the simulation tool published live at \url{https://www.dc-net.herokuapp.com} is a practical contribution for the community. Most importantly, the difficulties encountered during the development expanded further the goal of creating a simulation tool by also offering, as a contribution, an analysis presented in the evaluation which appreciates the discrepancy between theory and implementation of the Dining Cryptographers protocol.
 
+\subsection{dalla introduction}
+In other words, a DC-Net based on one-time keys (only fragment of information securely communicated) provides both perfect secrecy and unconditional security. The former concept refers to the fact that collecting all unencrypted messages will not reveal any information with the respect to the purpose of the protocol (i.e. untraceability); and the latter implies that the protocol is not vulnerable to cryptoanalytic attacks; hence communication, beside the keys-sending phase, can even occur in plain text.
+
+
+
 \section{Future Works}
 There are a number of future works to recommend in order to further move the simulation closer to a fully working implementation of the protocol.
 

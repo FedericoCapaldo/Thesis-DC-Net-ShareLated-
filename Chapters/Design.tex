@@ -54,14 +54,14 @@ EASCII encoding is a standard that uses 8 bits (0 to 255) to represent letters, 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{Images/Design/ascii.png}
-    \caption{Server with three clients connected}
+    \caption{Regular ASCII Table \cite{Ascii}}
     \label{fig:ascii}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{Images/Design/eascii.png}
-    \caption{Server with three clients connected}
+    \caption{Extended ASCII Tabled (EASCII) \cite{Ascii}}
     \label{fig:eascii}
 \end{figure}
 
@@ -69,7 +69,7 @@ EASCII encoding is a standard that uses 8 bits (0 to 255) to represent letters, 
 For instance, a participant wishing to send the phrase 'abc' as his sentence, will need three communications rounds to broadcast the whole message. Say that the message sender has 166 and 87 as his secret keys in the first communication round. He will XOR these two values with the number 97, which corresponds to the EASCII character 'a'. This would end up being broadcasted by the server as the final round result. The letter 'b' corresponds to 98 and 'c' is 99, which will be broadcasted anonymously in the two subsequent rounds.
 
 
-\subsubsection{Collision detection warning necessity} \label{sec:collisionDetectionWarnings}
+\subsubsection{Collision detection warning} \label{sec:collisionDetectionWarnings}
 An important design choice I made, following the implementation of the voting round, is the implementation of a 'message rejected' notification sent by the server to those client who tried to win the voting round but failed. In order words, this is a collision detection mechanism to allow only one winner at a time to transmit a sentence. This workaround has been implemented to avoid the necessity to send a unicast 'success' notification to the winning participant of the voting round, which would obviously uncover who the message sender is to a potential eavesdropper.
 
 In addition, this notification is emitted to the relevant participants only after everyone has provided their voting round responses to the server. This is better than sending such notification immediately back. Otherwise, there exists a scenario in which the first responding client provides his positive intention to send a message, and a second responding client also tries to send a message, but by being rejected immediately, an eavesdropper of the network, would trivially identify the first client as the actual message sender.
@@ -78,7 +78,7 @@ For the same reason, if all clients try to send a message in the same round, no 
 
 
 \section{System Architecture}
-The architecture of the simulator is simple. Only server and client are present in the picture and there is no persistent data to be stored in a database. The communication between back-end and front-end happens through socket.io events.
+The architecture of the simulator is simple. There are interaction only between a server, back-end, and a client, front-end. There is no persistent data to be stored in a database (figure \ref{fig:systemArchitecture}).
 
 \begin{figure}[H]
     \centering
@@ -87,9 +87,13 @@ The architecture of the simulator is simple. Only server and client are present 
     \label{fig:systemArchitecture}
 \end{figure}
 
+The communication between back-end and front-end happens through \lstinline{Socket.io} events. On the server, \lstinline{Socket.io} is attached to the express.js framework. On the client, \lstinline{socket.io} can be found in React.js components.
 
+Both the client and the server will have to perform some logic operations, since what the protocol computes is distributed partially on the clients and partially on the server.
 
 \section{Minimal Distributed Architecture}
+
+As mentioned multiple times, the minimum number of participants to execute the protocol is three. Therefore, this is the same number of clients that needs to establish a connection with the server through \lstinline{socket.io} (figure \ref{fig:distrubtedArchitecture}).
 
 \begin{figure}[H]
     \centering
@@ -98,20 +102,33 @@ The architecture of the simulator is simple. Only server and client are present 
     \label{fig:distrubtedArchitecture}
 \end{figure}
 
+In the final implementation, more than three connections to the server are also supported.
 
 \section{Event-Based Communication Example}
-View from single client point of view.
+Communication between the cryptographers and DC-Net service is event-based. Therefore, an event needs to be performed by either a client or the server so that a socket event is emitted. If there exists a handler listening to that specific event, a function is invoked. 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{Images/Design/singleClientSocketEvent.png}
+    \includegraphics[width=0.55\textwidth]{Images/Design/socketEventEmission.png}
     \caption{Socket event emission from client example}
     \label{fig:socketEventEmission}
 \end{figure}
 
-
+Figure \ref{fig:socketEventEmission} depicts an event being emitted by the client and handled by the server, which in turn emits another event that is handled by the client. The following steps take place:
+\begin{enumerate}
+    \item a client performs an action;
+    \item A socket even is emitted from the client;
+    \item The server, who is constantly listening to incoming events, perceived this. The handler is executed, which is supposed to execute some of the protocol logic;
+    \item If there exists some response data to be sent back to the client/clients, the response is prepared;
+    \item Then the relevant socket event is emitted by the server;
+    \item Assuming, that the client possess the relevant handler for the emitted event, a function is triggered;
+    \item Lastly, if the information received is a message to be displayed, the client interface is updated.
+\end{enumerate}
+  
 
 \section{Data flow depiction through sequence diagrams}
+
+The complexity of the Dining Cryptographer is condensed in the exchange of data between clients and server, rather than in the architecture itself. The remaining of the design chapter aims at presenting the most important exchange of messages between clients and server during the protocol execution with sequence diagrams. \newline
 
 
 \begin{figure}[H]
@@ -121,8 +138,18 @@ View from single client point of view.
     \label{fig:sequenceDiagramLegend}
 \end{figure}
 
+Figure \ref{fig:sequenceDiagramLegend} exemplifies the different components that will be found in the upcoming data sequence diagrams: 
+\begin{itemize}
+    \item an actor can be a client or the server;
+    \item a dashed line represents a connection event happening between two actors;
+    \item a continuous line is a message or event sent from one actor to the other;
+    \item a label over an actor's timeline define an action happening at the physical location of the said actor;
+    \item events are chronologically ordered from top to bottom;
+\end{itemize}
 
-\subsection{Basic Data Flow Design}
+\subsection{Design of Basic Data Flow}
+The basic data flow diagrams explain the flow of data of the core implementation of the protocol achieved.
+
 
 \begin{figure}[H]
     \centering
@@ -131,12 +158,32 @@ View from single client point of view.
     \label{fig:clientsConnection}
 \end{figure}
 
+
+Figure \ref{fig:clientsConnection} shows the connection events of three clients to the server. At each new connection, the server then broadcasts to all participants on the network about the presence of a new participant. Even the connecting client receives the notification of its own connection.
+
+For the sake of brevity, the next diagram will omit the broadcast of the connection event (e.g. 'Client P1 Connected.'), but it is an underlying broadcast that indeed happens.
+
+
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{Images/Design/successfulRound.png}
+    \includegraphics[width=0.6\textwidth]{Images/Design/successfulRound.png}
     \caption{Detailed example of a successful round}
     \label{fig:successfulRound}
 \end{figure}
+
+Figure \ref{fig:successfulRound} represents the complete data flow of a successful protocol execution. The steps are the following:
+\begin{enumerate}
+    \item The DC-Net server listens for incoming connections.
+    \item Three clients connect to the server and therefore the server will start the protocol execution;
+    \item a start round event is broadcasted by the server, and it reaches all clients in no particular order, who now are aware that the protocol started;
+    \item The server generates the adjacency relationship among clients. The key for each adjacency is also generated;
+    \item The secret keys are securely shared with each adjacency in the network in particular order;
+    \item Each client will decide whether they want to send a message, and once they provide their answer the round response is sent back to the server;
+    \item The server detects that all responses have been received and the final round result is calculated;
+    \item the round result is broadcasted in no particular order and the protocol execution is completed.
+\end{enumerate}
+
+\textbf{It is the presence of step number 6, alongside the XOR of the secret keys, that offers sender anonymity. All participants send a response to the server regardless of whether they are sending a message in their response. Consequently, a sender participant who is actually hiding a message in his response cannot be singled out.}
 
 \begin{figure}[H]
     \centering
@@ -145,6 +192,9 @@ View from single client point of view.
     \label{fig:abortedRound}
 \end{figure}
 
+Figure \ref{fig:abortedRound} presents the dynamics of the DC protocol execution that is aborted before completion. Simply put, after the start of the round client P2 disconnects form the server. This event brings the execution to an halt, due to the absence of three participants connected to the server. 
+
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{Images/Design/singleRoundCondensed.png}
@@ -152,9 +202,12 @@ View from single client point of view.
     \label{fig:singleRoundCondensed}
 \end{figure}
 
+As we have seen, there is a number of steps involved even in just a single round of communication. To simplify the representation of the following graph with advanced features, a successful protocol execution as represented in figure \ref{fig:successfulRound} can be condensed like in figure \ref{fig:singleRoundCondensed}.
 
-\subsection{Advanced Data Flow Design}
 
+
+\subsection{Design of Advanced Data Flow}
+The advanced data flow diagrams aim at explaining the exchange of data between the client and the server that make use of the advanced features: collision detection, resilient execution with nth participant disconnection during the round, protocol divided in voting, length-calculation and communication round.
 
 \begin{figure}[H]
     \centering
