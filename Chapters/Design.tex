@@ -27,7 +27,7 @@ The key graph employed determines with whom a cryptographer shares secret keys. 
 A full-mesh topology would confer a higher resilience to the network against colluding participants, but it is more complex to implement. Since the addressing the issue of collusion is not part of the requirements, the ring topology was preferred due to its simpler implementation.
 
 
-\subsection{Original Design Choices: my contributions}
+\subsection{Original Design Choices: My Contributions}
 Besides the choices presented above, I propose a number of original features to enhance the usefulness of the protocol in a real-world scenario.
 
 
@@ -216,6 +216,10 @@ The advanced data flow diagrams aim at explaining the exchange of data between t
     \label{fig:collisionDetection}
 \end{figure}
 
+Figure \ref{fig:collisionDetection} represents the collision detection feature. The schema, assumes that participants already connected to the server at a previous time as the diagram starts from the adjacency and key generation phase for the sake of brevity.
+
+Client P2 is the first client that hides a message in his response, i.e. flipped a message. Therefore, he is deemed as the message sender by the server. Then, client P3 also tries to flip his response. However, after the last response is received, namely the one of client P1, the server notifies client P3 that his message was rejected.
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth]{Images/Design/roundWithDisconnections.png}
@@ -223,9 +227,19 @@ The advanced data flow diagrams aim at explaining the exchange of data between t
     \label{fig:roundWithDisconnections}
 \end{figure}
 
+The advanced implementation supports an arbitrary number of participants. Therefore, as long as the minimum number of three clients is connected the protocol is supposed to continue its execution. 
+
+In figure \ref{fig:roundWithDisconnections}, four participants connect to the DC-Net service. Since at least three clients are connected, the protocol is executed. After the secret keys have been shared with all adjacencies, client P3 disconnects. Despite this event happens in the middle of the round, the protocol continues its execution. This happens because the server updates the key values of P3 neighbours, so that correctness of execution is preserved.
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.6\textwidth]{Images/Design/longRound.png}
     \caption{Representation of complex round of communication}
     \label{fig:longRound}
 \end{figure}
+
+Figure \ref{fig:longRound} is the diagram that most faithfully represents the data flow of the protocol in the final implemented simulation. 
+
+Namely, communication is divided in the three types of round presented in section \ref{sec:threeRoundTypes}. The diagram represents the correct execution of the protocol with 4 participants. Communication starts with a voting round, in which one of the four clients states his intention to send a message. It follows a length-calculation round that allows the message sender to provide the sentence to be anonymously shared. Before the series of communication round starts, the server shares a number of keys in bulk with each adjacency. This way, the communication rounds can happen one after the other without repeating the key generation process at each round.
+
+Lastly, the server informs the clients that the communication rounds terminated. This event prompts the clients to display the aggregate message stored in their local memory.

@@ -2,17 +2,60 @@
 
 \section{Conclusions}
 
-The principle objective of this project has been to demonstrate the existence of a disparity between the theoretical perfection of the DC-Net protocol and the practical difficulties of deployment. I have tried to prove how a working implementation necessarily compromises sender untrecability and corretness. 
+The main goal of this report has been to display the challenges of implementing Chaum's protocol in practice, as this has never been seriously attempted before. Specifically, I have tried to show how a working implementation inevitably puts strain on the security properties of untraceability as well as correctness. 
 
-to maintaining the desired security properties and preserving correctness at all times. I aimed to show this divergence by creating a simulation tool for the protocol in question. The effort of putting a theoretical protocol in practice, i.e. overcoming complications that arose during each step of development, has triggered a series of reflections. Put together, these observations on the work performed, represent a complementary contribution to the wealth of academic papers on the DC-Net protocol, which focus almost entirely on theoretical considerations.
+Embarking on a simulation project for the DC-Net protocol was a necessary step to expose the difficulties of maintaining untre ...
+
+As I have addressed in chapter 2, theoretical accounts do not seem to be aware of some of the issues I pointed out, namely preserving correctness when clients join/leave network during protocol execution, the need of a length-calculation round between voting phase and communication phase; how to transmit useful messages. 
+ 
+ The literature I reviewed, however, positive in supplementing Chaum's protocol with interesting solution for the key exchange phase; solution for identifying malicious attackers;
+ 
+Nonetheless, since the academic debate stays in the abstract and do not dare to sail the dangers waters of the real-world, there is only so far that you can go. 
 
 
-The aim of this project was to create a simulation tool for a Dining Cryptographer network. The report started giving an in-depth presentation of this security protocol, to then move to the explanation of the implementation process, starting from design and ending with testing. The need to develop such a tool was found in the lack of interesting practical works on this protocol, which is however addressed extensively by academic theoretical works. The implementation met all the intended requirements both the basic ones, for an acceptable product, and the advanced ones, for a more complex system with useful functionalities. A number of roadblocks arose throughout the development of the project: - metti i roadblocks. 
+The very few attempts to build a simulation are not committed. Most tools seem uncompleted attempts to simulate the protocol, 
 
-As a consequence of meeting these challenges, my contributions are: a proposal of diving the communication in voting, length-calculation and communication round (instead of voting and communication rounds); detecting collision by storing secret keys on the server; using 8-bit keys that allow a message to be any number from 0 to 255, which allows to interpret an anonymously shared message with the ASCII encoding standard in order to share useful human-readable messages. In addition, also the simulation tool published live at \url{https://www.dc-net.herokuapp.com} is a practical contribution for the community. Most importantly, the difficulties encountered during the development expanded further the goal of creating a simulation tool by also offering, as a contribution, an analysis presented in the evaluation which appreciates the discrepancy between theory and implementation of the Dining Cryptographers protocol.
 
-\subsection{dalla introduction}
-In other words, a DC-Net based on one-time keys (only fragment of information securely communicated) provides both perfect secrecy and unconditional security. The former concept refers to the fact that collecting all unencrypted messages will not reveal any information with the respect to the purpose of the protocol (i.e. untraceability); and the latter implies that the protocol is not vulnerable to cryptoanalytic attacks; hence communication, beside the keys-sending phase, can even occur in plain text.
+My work sits in this space very originally. 
+
+I aimed at building a very usable tool, and in the early stages I had to take a number of design choices. Thinking about the protocol in realistic term to have a working implementation I met some roadblocks for which I came up with my own design choices. 
+
+I then proceeded to implement such design in the form of a web application, that clearly addressed all the weakneesses of similar solution. 
+
+Because there is a certain complexity to translate the concepts from theory to practise, the project was divided in basic and advanced requirement as a form of prioritization. 
+
+
+The implementation met all the intended requirements both the basic ones, for an acceptable product, and the advanced ones, for a more complex system with useful functionalities. A number of roadblocks arose throughout the development of the project: - metti i roadblocks. 
+
+ The effort of putting a theoretical protocol in practice, i.e. overcoming complications that arose during each step of development, has triggered a series of reflections. Put together, these observations on the work performed, represent a complementary contribution to the wealth of academic papers on the DC-Net protocol, which focus almost entirely on theoretical considerations.
+
+The overarching theme throughout the paper has been that there is a disparity between the theoretical perfection of the DC-Net protocol and the practical difficulties of deployment. 
+ I have not resolved this gap but I clearly show that it is not possible to overcome the complications of the real world with the same perfection of the theory. 
+ 
+ deemed unpractical but my attempt to make it 2work shows a lot of untackled areas that are important to address and I hope this triggers a discussion closer to the real world. 
+ 
+ 
+ I have contextualised the issue of anonymity vs untraceability, due to the fact that these are difficult concepts to reason about. 
+ 
+ (Anonymity entail untraceability but not vice versa. Therefore anonymity is a stronger form of untraceability.
+ 
+ 
+ The report started with a conceptual distinction between anonymity and untraceability.
+ 
+ 
+ 
+
+
+
+
+The report started giving an in-depth presentation of this security protocol, to then move to the explanation of the implementation process, starting from design and ending with testing. 
+
+The need to develop such a tool was found in the lack of interesting practical works on this protocol, which is however addressed extensively by academic theoretical works. 
+
+
+As a consequence of meeting these challenges, my contributions are: a proposal of diving the communication in voting, length-calculation and communication round (instead of voting and communication rounds); detecting collision by storing secret keys on the server; using 8-bit keys that allow a message to be any number from 0 to 255, which allows to interpret an anonymously shared message with the EASCII encoding standard in order to share useful human-readable messages. In addition, also the simulation tool published live at \url{https://www.dc-net.herokuapp.com} is a practical contribution for the community. 
+
+Most importantly, the difficulties encountered during the development expanded further the goal of creating a simulation tool by also offering, as a contribution, an analysis presented in the evaluation which appreciates the discrepancy between theory and implementation of the Dining Cryptographers protocol.
 
 
 

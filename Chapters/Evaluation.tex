@@ -63,8 +63,10 @@ I also found an edge case, where an eavesdropper inside the network can impair t
 It follows that, since there are only two participants other than the eavesdropper, then the eavesdropper knows that the message sender obviously is the client who did not receive a rejection. In this case, anonymity is internally breached and only 'preserved' in respect to an external observer, assuming that such observer is not colluding with the internal eavesdropper.
 
 
-\section{Discrepancy between Protocol Perfection and Real World Implementation} \label{sec:collisionDetect}
-With this implementation, I tried to highlight the disparity between the theoretical perfection of the DC-Net security protocol and the weaknesses of a working solution in respect to maintaining the desired security properties and preserving correctness at all times. I showed this gap between theory and practice by creating a simulation tool for the protocol in question. The effort of putting a theoretical protocol in practice, overcoming complications that arose during each step of development, has triggered a series of reflections. The rest of the chapter gives space to considerable practical challenges, too often neglected in the theoretical literature.
+\section{Discrepancy between Theoretical Protocol and Real World Implementation} \label{sec:collisionDetect}
+With this implementation, I want to highlight the gap between the theoretical perfection of the Dining Cryptographers protocol and the weaknesses of a functional solution deployed. The discrepancy stands in the challenge of preserving the desired security properties and maintaining correctness of the protocol. 
+
+The effort of putting a theoretical protocol in practice, overcoming complications that arose during each step of development, has triggered a series of reflections. The rest of the chapter gives space to considerable practical challenges, too often neglected in the theoretical literature.
 
 \subsection{Correctness of protocol execution}
 The protocol in theory is presented by Chaum with cryptographers at the table. In an actual implementation, there is the process of sitting down at the table. In other words, there is a connection event for each client to the DC-Net Service, and therefore a temporal element in joining the network, which may take place at different phases of the protocol execution. Such element can, in practise, create an issue of correctness when one or more participants join or leave the protocol during the actual execution.
