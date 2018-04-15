@@ -1,10 +1,7 @@
 \chapter{Introduction}
 
 
-To protect people's privacy and freedom of speech, different protocols have been developed in an attempt to provide untraceable communication. Untraceability can be understood as the inability to link an action to the principal who performed it.
-
-
-Among the protocols that fulfill such security goal, the Dining Cryptographers Network (DC-Net) is the strongest one to provide untraceability of the sender and receiver. 
+To protect people's privacy and freedom of speech, different protocols have been developed in an attempt to provide untraceable communication. Untraceability can be understood as the inability to link an action to the principal who performed it. Among the protocols that fulfill such security goal, the Dining Cryptographers Network (DC-Net) is the strongest one to provide untraceability of the sender and receiver. 
 
 What makes DC-Net particularly interesting is its property of unconditional security: the protocol is invulnerable to any kind crypto-analytic attack, no matter the amount of computational power of an adversary. This property holds in theory very well. However, the protocol is generally deemed impractical. Thus, there are very few attempts to simulate it.
 
@@ -46,37 +43,34 @@ In line with this educational objective of the simulation tool, I design a GUI s
 The intended audience of this project is academics and Information Security students interested in the workings of the DC-Net protocol. Overall, I assume the target audience to be highly computer literate at university level.
 
 
-\section{Contributions of my thesis}
+\section{Personal Contributions}
+With the delivery of this project, my contributions to the academic discussion on the DC-Net topic are listed below. \newline
 
-The 
+Firstly, the simulation tool implemented is unique in its kind as, to my knowledge, there is no other user-friendly interface application that simulates this theoretical protocol. Consequently, I do not use a command-line tool as this does not offer an intuitive UI.  Moreover, what renders it unique is that I actually deploy the tool as a distributed system rather than simulating the network on a single machine. The simulation is available online at \url{https://dc-net.herokuapp.com}. \newline
+
+Secondly, the experience of building this simulator from scratch has been an authentic journey of self-learning. Thanks to this, I have observed first-hand some of the complex challenges of translating a theoretical security protocol into a deployed piece of work.
+Put together, my analysis on the work performed represent a complementary contribution to the academic debate on the DC-Net protocol, the latter focusing entirely on theoretical considerations. \newline
 
 
-This has been an authentic journey of discovery it's not by reading other theoretical accounts that i came up with things. it's actually the product of doing the code 
-
-
-
-- the simulation tool
-- the analysis of moving from theory to practice
-- the personal proposal for real world protocol usage (Extended ASCII interpretation; division of communication in voting, length-calculation, communication rounds, preventing user to win next round for network usage fairness)
-
+Lastly, given the lack of examples on how to implement a DC-Net, I put forward specific solutions that aim to further bridge the gap between theory and real-world usage of the protocol. Specifically, I propose to interpret round messages with Extended ASCII encoding standard, which enables the transmission of human readable messages. I also introduce the concept of length-calculation round as an intermediate step to voting and communication rounds to preserve untraceability when a message is communicated across multiple rounds. Finally, I try to guarantee a degree of fairness in the network usage by preventing the same user from sending back-to-back.
 
 
 \section{Report Structure}
 
-The report comprises 8 chapters. The content is divided as it follows:
+The report consists of 8 chapters and its content is presented as it follows:
 
-Chapter 1, the current chapter, outlines the motivation, scope and objectives of the simulator tool.
+In chapter 1, the current chapter, I outline the motivation, scope and objectives of the simulation tool.
 
-Chapter 2 introduces background and related work in terms of anonymity and untraceability, which serves as a foreword for the actual in-depth presentation of the DC-Net protocol. A complete proof of security of the protocol is provided, and lastly the current state of art of the DC-Net implementations is looked at.
+In chapter 2, I review the differences between anonymity and untraceability, which sets the scene for an in-depth presentation of the DC-Net protocol. I, then, explain the limitations and possible extensions of the basic protocol and review the current state of art of the DC-Net implementations.
 
-Chapter 3 explores the requirements, originated in line with the ultimate goals of the project of reproducing a working version of the protocol. Following, there is a presentation of how each of these requirements is going to be fulfilled. 
+In chapter 3, I present the basic and advanced requirements of the application. Following, I present how each requirement is fulfilled in the implementation. 
 
-Chapter 4 examines the design of the architecture from different perspectives by employing diagram notations (e.g. class diagram, data flow diagram). The graphical user interface is also presented here.
+In chapter 4, I motivate the design choices taken and present the design of the implemented simulation by employing UML diagram notations.
 
-Chapter 5 delves into the actual implementation achieved, describing in detail the technologies used, the challenges faced through development iterations, the programming design choices employed to guarantee the security and untraceability of the application, and the mapping between the feature implemented and the theoretical concepts of the protocol.
+In chapter 5, I delves into the actual implementation. I describe the technologies used, and provide code snippets of the main functionalities. I then outline the challenges faced throughout development and conclude with the mapping of the theoretical concepts to the corresponding features implemented.
 
-Chapter 6 briefly touches on the ethical issues related to the piece of software implemented, also mentioning how the projects abides by the rule of the British Computing Society.
+In chapter 6, I briefly state how the piece of software implemented does not present ethical issues.
 
-Chapter 7 evaluates the work undertaken addressing the known limitations and suggestion future improvements that could be implemented, if more time was available.
+In chapter 7, I evaluate the work undertaken meets the project's requirements, I compared the work against available simulation tools and address the known limitations. I then present my analysis of the difficulties of preserving untraceability when trying to implement a Dining Cryptographer Network.
 
-Lastly, Chapter 8 summarizes the overall project and draw the conclusion over the accomplished work and discusses possible future works.
+Lastly, in chapter 8, I summarise the overall project and draw the conclusion over the accomplished work and discusses possible future works.
