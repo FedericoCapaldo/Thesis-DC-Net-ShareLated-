@@ -8,7 +8,7 @@ The simulation implemented met all the basic requirements and advanced requireme
 \begin{itemize}
     \item message collisions are detected;
     \item the communication occurs in different types of rounds (voting, length calculation and communication) so as to send longer messages;
-    \item I adopt ASCII encoding to translate the result of communication rounds into letters so as to communicate human-readable messages;
+    \item I adopt EASCII encoding to translate the result of communication rounds into letters so as to communicate human-readable messages;
     \item any number of participants can join or leave the network during the protocol execution without affecting the correctness of the messages exchanged;
 \end{itemize}
 All of the above takes place with an actual distributed architecture and using a graphical user interface.
@@ -40,9 +40,9 @@ A real-world scenario that I do not address in this simulation is the possible c
 \subsection{Presence of Server} \label{sec:evalServerPresence}
 Making use of a client-server architecture introduces the entity of the server, which represents the DC-Net Service. This raises the issue of trust and it calls for an assumption that, at server level, there is no abuse of the comprehensive view of the network (see section \ref{sec:clientserver}). Since this is a web application, the use of a SSL certificate would verify the server's identify but a client using this platform cannot know how the server handles the responses sent to it. I made a design choice between the useful but questionable presence of an omniscient principal, the server, and the choice of a serverless architecture but with limited capabilities. The client-server architecture was chosen because the presence of a centralised service allows the implementation of some advanced features. For example, it would not be possible to detect collisions without an entity that is able to see all the messages in a round.
 
-\subsection{Collision Detection Warnings: Effects} \label{sec:collisionDetectionWarnings}
+\subsection{Collision Detection Warnings: Effects}
 In my implementation, I divided communication in three types of round (voting, length-calculation, communication rounds) as presented in section \ref{sec:advancedReq}.
-As presented in XX, a collision detection warning is sent solely to the failing participants who attempted to win a voting round. Although I justify the necessity of such mechanism (section XX), I came to realise that there are implications in respect to untraceability, which cannot be overlooked.
+As presented in \ref{sec:collisionDetectionWarnings}, a collision detection warning is sent solely to the failing participants who attempted to win a voting round. Although I justify the necessity of such mechanism, I came to realise that there are implications in respect to untraceability, which cannot be overlooked.
 
 
 \subsubsection{Anonymity Reduction} \label{sec:anonymityReductionLimitation}
@@ -63,7 +63,7 @@ I also found an edge case, where an eavesdropper inside the network can impair t
 It follows that, since there are only two participants other than the eavesdropper, then the eavesdropper knows that the message sender obviously is the client who did not receive a rejection. In this case, anonymity is internally breached and only 'preserved' in respect to an external observer, assuming that such observer is not colluding with the internal eavesdropper.
 
 
-\section{Discrepancy between Protocol Perfection and Real World Implementation}
+\section{Discrepancy between Protocol Perfection and Real World Implementation} \label{sec:collisionDetect}
 The principle objective of this project has been to demonstrate the existence of a disparity between the theoretical perfection of the DC-Net security protocol and the fallibility of a working solution that tries to hold the desired security properties and preserve correctness at all times. I aimed to show this divergence by creating a simulation tool for the protocol in question. The effort of putting a theoretical protocol in practise, i.e. overcoming complications that arose during each step of development, has triggered a series of reflections. Put together, these observations on the work performed, represent a complementary contribution to the wealth of academic papers on the DC-Net protocol, which focus almost entirely on theoretical considerations. 
 
 The rest of the chapter gives space to fundamental practical challenges, too often neglected in the theoretical literature.
@@ -79,7 +79,7 @@ More specifically, after the keys updated, the combination of old responses reco
 Thus, the simulations employs a waiting mechanism for clients that join the network in the midst of the protocol execution to delay their participation until the next voting round.
 
 \subsubsection{Correctness of protocol on client disconnections}
-Another important problem not addressed by theoretical works is the event of disconnection of a user while the protocol is executing. A client abandoning the network after the key-exchange phase in either of the voting, length-calculation, or communication rounds undermines the correctness of the final result because the response of the disconnecting client is excluded in the server's final round calculation. This leads to an incorrect round results since some of the secret keys are not XORed twice, which is fundamental to reveal the broadcasted hidden round message (an ASCII character) sent by the anonymous message sender (see section \ref{sec:xorDemonstration}).
+Another important problem not addressed by theoretical works is the event of disconnection of a user while the protocol is executing. A client abandoning the network after the key-exchange phase in either of the voting, length-calculation, or communication rounds undermines the correctness of the final result because the response of the disconnecting client is excluded in the server's final round calculation. This leads to an incorrect round results since some of the secret keys are not XORed twice, which is fundamental to reveal the broadcasted hidden round message (a EASCII character) sent by the anonymous message sender (see section \ref{sec:xorDemonstration}).
 
 The immediate solution is to, again, update the adjacencies when a client disconnects and, if necessary, stop and restart the round. However, in a network with $n$ number of participants, such mechanism would affect the user experience and serviceability of the protocol. Moreover, it also allows a malicious participant to harm the availability of the service by simply connecting and disconnecting to the service repeatedly.
 
@@ -102,10 +102,10 @@ The need of this step was never found in the theoretical works that simply propo
 \subsection{Difficulty of ensuring fair use of network}
 DC-Net protocol focuses on untraceability. When looking at the implementation of a software, however, another main security goal to be guaranteed is availability. In the context of the implemented simulation, a malicious participant could decide to hog the service and make it unavailable by continuously attempting to win the voting round. To counteract this issue, I implement a feature that prevents the message sender to win the next voting round. By doing so, a malicious participant trying to hog the service, can succeed only half of the time (one round yes and one round no).
 
-However, the ideal solution to ensure fairness in the network usage is to implement a queue. The server would make use of this data structure to record the chronological order of attempts by the participants to send a message. This gives the possibility to a participant to send a message when he reaches the front of the queue. Though, this is a very fiddly feature to implement due to intricate possible scenarios. 
+However, the ideal solution to ensure fairness in the network usage is to implement a queue. The server would make use of this data structure to record the chronological order of attempts by the participants to send a message. This allows a participant to send a message when he reaches the front of the queue. Nonetheless, this is a very fiddly feature to implement due to intricate possible scenarios. 
 
 
-An exemplification of this is the following: there are at least two cryptographers in the sending queue who tried to win the voting round simultaneously. At the start of the new round the user at the front of the queue is asked if he would still like to send a message. The first issue raised is that this question cannot be a unicast message between the client and the server. Otherwise if after this communication the length-calculation round happens, it would be obvious who the sender is. Therefore, to maintain untraceability this question would require a further type of broadcast round. 
+An example of how complicated this quickly becomes is the following. There are at least two cryptographers in the sending queue who tried to win the voting round simultaneously. At the start of the new round the user at the front of the queue is asked if he would still like to send a message. The first issue raised is that this question cannot be a unicast message between the client and the server. Otherwise if after this communication the length-calculation round happens, it would be obvious who the sender is. Therefore, to maintain untraceability this question would require a further type of broadcast round. 
 
 Furthermore, there are particular edge cases to be addressed. For example, what happens if the cryptographer, front of the queue, accepted to send a message but then disconnects? It is likely that that the same offer of sending a message should be made to the new first user in the queue, having to repeat another broadcast round just to ask this. Hence, implementing a queue of message senders risks to make the protocol to repeat the voting phase several times. This is the completely counterproductive since it could affect the availability of the service ,which was the issue that the queue set out to solve in the first place. 
 

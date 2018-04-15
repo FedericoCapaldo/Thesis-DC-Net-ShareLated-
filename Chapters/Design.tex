@@ -1,47 +1,80 @@
 \chapter{Design} \label{chapter:design}
-This chapter of the report has the purpose of presenting the architecture of the DC-Net simulator from different perspectives through the utilization of UML diagram notations.
+This chapter of the report has the purpose of presenting the DC-Net simulator architecture through the utilization of UML diagram notations.
 
-Firstly, I explain the reasons behind the design choices taken. Secondly, the architecture of the simulator is presented, also showing an example of how the event-based communication happens. Lastly, there is a series of sequence diagrams that exemplifies the data flow between clients and server both for the basic implementation of the protocol and the advanced one. \newline
-
-Throughout the chapter some of the technologies are named, which will be presented in the implementation section (chapter \ref{chapter:implementation}).
+Firstly, I explain the reasons behind my design choices. Secondly, the architecture of the simulator is presented alongside an example of how the event-based communication occurs. Lastly, there is a series of sequence diagrams that exemplifies the data flow between clients and server both for the basic and advanced implementations of the protocol. All of the technologies that happen to be mentioned in this chapter will be presented properly in the implementation section (chapter \ref{chapter:implementation}).
 
 
 \section{Design Choices}
-Throughout the project, a number of decisions about the design of the simulator architecture were taken. This sections gi
+Throughout the project, I took a number of decisions about the architecture of the simulator. This section justifies these decisions also including which are the original choices proposed by me. 
 
-The simulation will be a real-time web-based application that resembles the dynamics of the Dining Cryptographers. The simulation also attempts to be as faithful as possible to the original protocol to preserve untraceability.
-
-
-I deem choice of a web application appropriate for three reasons:
+\subsection{Web Application}
+The simulation will be a real-time web-based application that resembles the dynamics of the Dining Cryptographers. I deem choice of a web application appropriate for three reasons:
 \begin{enumerate}
-    \item From a user perspective, downloading and installing the application and its third-party required components (dependencies) is likely to end up in technical issues. By using a website, the user can focus on learning the protocol rather than having to overcome possible set-up barriers of a native application;
-    \item Building a website entails creating a Graphical User Interface (GUI). This results in a more user-friendly experience in respect to a command line application, often the interface of choice for most of the DC-Net simulations available.
-    \item A live web application allows clients to connect to the DC-Net server over the internet. Such distributed architecture is a realistic implementation of the protocol. This represents an important step forward in comparison to the of the other simulations I found. In fact, as observed in section \ref{sec:similarWorks}, current simulations often employ scripts to emulate all the nodes on the same machine.
+    \item From a user perspective, downloading and installing the application and its third-party required components, i.e. dependencies, is likely to end up in technical issues. By using a website, the user can focus on learning the protocol rather than having to overcome possible set-up barriers of a native application;
+    \item Building a website entails creating a Graphical User Interface (GUI). This results in a more user-friendly experience in respect to a command line application, which often is the interface of choice for most of the DC-Net simulations available.
+    \item A live web application allows clients to connect to the DC-Net server over the Internet. Such distributed architecture is a realistic implementation of the protocol. This differs from available simulations that often emulate all the nodes on the same machine.
 \end{enumerate}
 
-The website will employ a client-server architecture. This design is considered appropriate for the simulation since it offers a farther reach to build complex mechanisms for handling the advanced requirements.
+\subsection{Network Topology}
+The website will employ a client-server architecture. This topology is considered appropriate for the simulation since it offers a farther reach to build complex mechanisms for handling advanced requirements such as multiple rounds of communications or ability to detect message collision.
 
-\textbf{It is important to highlight that the software implemented is going to be a \emph{simulation}. The role of the server in the application is seen as a facilitator to exchange messages between clients. Therefore, addressing the trust issue mentioned in section \ref{sec:clientserver} is beyond the scope of this project.}
-
-A ring topology is the key exchange graph employed.
-
-
-To ensure the secure exchange of keys, 
+It is important to highlight that the software implemented is going to be a \emph{simulation}. The role of the server in the application is seen as a facilitator to exchange messages between clients. Therefore, addressing the trust issue mentioned in section \ref{sec:clientserver} is beyond the scope of this project.
 
 
+\subsection{Key-Exchange Graph Topology}
+The key graph employed determines with whom a cryptographer shares secret keys. I chose the ring topology, which entails that a cryptographer is part of two adjacencies, and consequently owns exactly two secret keys each round. 
+
+A full-mesh topology would confer a higher resilience to the network against colluding participants, but it is more complex to implement. Since the addressing the issue of collusion is not part of the requirements, the ring topology was preferred due to its simpler implementation.
 
 
-\subsection{Collision warning necessity}
-Moreover, I set up a collision detection warning, which is a notification sent by the server only to the participants who attempted but failed to win a voting round. 
-
-This mechanism has been implemented to avoid the necessity to send a unicast 'success' notification to the winning participant of the voting round, which would obviously uncover who the message sender is to a potential eavesdropper.
+\subsection{Original Design Choices: my contributions}
+Besides the choices presented above, I propose a number of original features to enhance the usefulness of the protocol in a real-world scenario.
 
 
-self-declared status. 
-A participant trying to win the voting round automatically declares himself the message sender on his browser, as if he were successful in the round. 
 
 
-In fact, if all participants tried to win the voting round the communication is aborted.
+
+
+
+\subsubsection{Three types of rounds (voting, length-calculation, communication)} \label{sec:threeRoundTypes}
+
+Proposals to extend the protocol to multiple rounds of communications in the literature, usually divide communication in a voting phase and a actual sending phase. Although this approach is the same proposed for my implementation, I identified the necessity of a third type of round: length-calculation round. This lead to the choice of splitting the protocol execution in voting, length-calculation and communication rounds. 
+The details of each phase is the following:
+\begin{enumerate}
+    \item \textbf{voting}: participants that would like to send a message try to win the right to do so. Only one user can win a voting round, who becomes the message sender. The key range is simply 0 to 1, where the flipping of one's response is understood as an attempt to win the voting phase. This round type is repeated until a participant want to send a message;
+    \item \textbf{length-calculation}: the voting-round winner types the sentence he wants to share anonymously. The message sender will provide this value in the XORed round response. The broadcasted result of this round is therefore the length of the sentence. This information enables the DC-Net service to compute the same number of keys as the length of the sentence before the communication rounds starts. These keys will be delivered in bulk to the participants; The key range chosen for the length-calculation round is 100 to 999. The reason behind this choice is to avoid a scenario in which all randomly generated keys inside the network are very close to 0 and the sentence provided is of greater length. This is likely to reveal the identity of the message sender by simply determining which round response that the server receives is the longest. This round type lasts 10 seconds and can be repeated three times, after which the protocol is aborted.
+    \item \textbf{communication}: as many rounds as the message length occur to allow the message sender to anonymously share all characters of the sentence in the form of EASCII codes. The result of this phase will be an anonymously broadcasted sentence into the whole network. The key range is 0 to 255, since the EASCII encoding, explored in the next section, has 256 characters. At the end of this phase, a new voting round starts.
+\end{enumerate}
+
+
+\subsubsection{Extended ASCII encoding interpretation}
+To exchange meaningful human-readable messages, I advance the idea of using 8-bit keys during communication rounds and interpret each round result as an Extended ASCII encoded character. 
+EASCII encoding is a standard that uses 8 bits (0 to 255) to represent letters, numbers, and symbols.  It is to be noted that regular ASCII has values from 0 to 127 (figure \ref{fig:ascii}), and these are extended with more symbols to 255 in the Extended ASCII version (figure \ref{fig:eascii}). 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{Images/Design/ascii.png}
+    \caption{Server with three clients connected}
+    \label{fig:ascii}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Images/Design/eascii.png}
+    \caption{Server with three clients connected}
+    \label{fig:eascii}
+\end{figure}
+
+
+For instance, a participant wishing to send the phrase 'abc' as his sentence, will need three communications rounds to broadcast the whole message. Say that the message sender has 166 and 87 as his secret keys in the first communication round. He will XOR these two values with the number 97, which corresponds to the EASCII character 'a'. This would end up being broadcasted by the server as the final round result. The letter 'b' corresponds to 98 and 'c' is 99, which will be broadcasted anonymously in the two subsequent rounds.
+
+
+\subsubsection{Collision detection warning necessity} \label{sec:collisionDetectionWarnings}
+An important design choice I made, following the implementation of the voting round, is the implementation of a 'message rejected' notification sent by the server to those client who tried to win the voting round but failed. In order words, this is a collision detection mechanism to allow only one winner at a time to transmit a sentence. This workaround has been implemented to avoid the necessity to send a unicast 'success' notification to the winning participant of the voting round, which would obviously uncover who the message sender is to a potential eavesdropper.
+
+In addition, this notification is emitted to the relevant participants only after everyone has provided their voting round responses to the server. This is better than sending such notification immediately back. Otherwise, there exists a scenario in which the first responding client provides his positive intention to send a message, and a second responding client also tries to send a message, but by being rejected immediately, an eavesdropper of the network, would trivially identify the first client as the actual message sender.
+
+For the same reason, if all clients try to send a message in the same round, no matter the timing of the rejection notification,  the sender would be revealed to an eavesdropper by being the only entity not to receive a rejection notification. Hence, if all clients try to send a message in the same round, communication is aborted.
 
 
 \section{System Architecture}

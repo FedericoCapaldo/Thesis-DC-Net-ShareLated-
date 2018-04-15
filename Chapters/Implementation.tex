@@ -360,7 +360,7 @@ The voting round uses 1-bit keys and it tries to simply determine who will send 
 
 The length-calculation rounds allows the message sender to provide a sentence, in the time span of 10 seconds. After this time, all participants browsers, including the non sender's one, will automatically dispatch the response to the server. The time span is fixed for all participants, to avoid a scenario in which the message sender takes a long time to write a message. In such case, the sender would be reveal by simply looking at the which message was received last by the server. Due to the limited time frame, the message sender has 3 attempts to provide the sentence. In addition, the key will be a secure random value in between 100 and 999. I chose this range to avoid a scenario in which all the secret keys are very short numbers to be XORed with the message length. If this latter value would be considerably longer than the keys themselves, untraceability of the sender could be compromised by looking at which is the greater response sent to the server. 
 
-Lastly, there is a number of communication rounds, one for each letter of the sentence provided. These rounds happens with a short delay between each other, and at the end the aggregate message received will be shown. Communication round use 8-bit keys, useful to hide the corresponding number of a ASCII character, as explained in the next section. In order to generate n keys, I employed the \lstinline{crypto} JavaScript in-built module to generate an array of cryptographically secure pseudo-random numbers.
+Lastly, there is a number of communication rounds, one for each letter of the sentence provided. These rounds happens with a short delay between each other, and at the end the aggregate message received will be shown. Communication round use 8-bit keys, useful to hide the corresponding number of a EASCII character, as explained in the next section. In order to generate n keys, I employed the \lstinline{crypto} JavaScript in-built module to generate an array of cryptographically secure pseudo-random numbers.
 
 \begin{lstlisting}
     function secureRandomKeyArrayOfLength(n) {
@@ -373,8 +373,8 @@ Lastly, there is a number of communication rounds, one for each letter of the se
 \end{lstlisting}
 
 
-\subsection{ASCII encoding conversion}
-As one of the main contributions, I proposed to interpret a the value of a round message as a ASCII code. Thus, the sentence provided by the message sender (figure \ref{fig:exampleMessage}) will be a series of ASCII characters (figure \ref{}), and at each communication round the corresponding ASCII code of the nth letter will be XORed with the two secret keys that the sender participant possess.
+\subsection{EASCII encoding conversion}
+As one of the main contributions, I proposed to interpret a the value of a round message as a EASCII code. Thus, the sentence provided by the message sender (figure \ref{fig:exampleMessage}) will be a series of EASCII characters (figure \ref{}), and at each communication round the corresponding EASCII code of the nth letter will be XORed with the two secret keys that the sender participant possess.
 
 \begin{figure}[H]
     \centering
@@ -387,19 +387,19 @@ As one of the main contributions, I proposed to interpret a the value of a round
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.70\textwidth]{Images/Implementation/messageInASCII.png}
-    \caption{Interpretation of message in ASCII encoding}
+    \caption{Interpretation of message in EASCII encoding}
     \label{fig:exampleInASCII}
 \end{figure}
 
 For example, in the first communication round of the message shown in figure \ref{fig:exampleMessage}, if the two secret keys of the message sender are 207 and 91. The round message sent to the server would be $M = 207 \oplus 91 \oplus 104 = 252$.
 
-The conversion from a character to its corresponding ASCII code and vice versa is achieves in JavaScript with simple in-built functions of the String object: 
+The conversion from a character to its corresponding EASCII code and vice versa is achieves in JavaScript with simple in-built functions of the String object: 
 \begin{lstlisting}
-    // obtain ASCII code number of a letter from a string called 'sentence'
-    var ASCIIcode = sentence.charCodeAt(letterIndex);
+    // obtain EASCII code number of a letter from a string called 'sentence'
+    var EASCIIcode = sentence.charCodeAt(letterIndex);
 
-    // obtain a letter from a give ASCII code
-    var letter = String.fromCharCode(ASCIIcode);
+    // obtain a letter from a give EASCII code
+    var letter = String.fromCharCode(EASCIIcode);
 \end{lstlisting}
 
 
