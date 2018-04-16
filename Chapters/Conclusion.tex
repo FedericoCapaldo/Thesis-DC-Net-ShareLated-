@@ -2,74 +2,49 @@
 
 \section{Conclusions}
 
-The main goal of this report has been to display the challenges of implementing Chaum's protocol in practice, as this has never been seriously attempted before. Specifically, I have tried to show how a working implementation inevitably puts strain on the security properties of untraceability as well as correctness. 
+At the start of my research, I set out to build a simulation tool for the Dining Cryptographers security protocol, as this has never been attempted before. The lack of real simulations was the main motivation to pursue this project. 
 
-Embarking on a simulation project for the DC-Net protocol was a necessary step to expose the difficulties of maintaining untre ...
+During the implementation, however, several challenges arose. These practical problems were unexpected. As a result, the purpose of this report evolved to include an analysis of the implementation issues. Specifically, I showed how a working implementation inevitably puts strain on the security property of untraceability as well as correctness, as outlined in chapter 5 and chapter 7.
 
-As I have addressed in chapter 2, theoretical accounts do not seem to be aware of some of the issues I pointed out, namely preserving correctness when clients join/leave network during protocol execution, the need of a length-calculation round between voting phase and communication phase; how to transmit useful messages. 
+Without doubt, embarking on a simulation project for the DC-Net protocol was a necessary phase to really understand how difficult it can be to maintain untraceability and correctness at all times in real cases. As a matter of fact, theoretical accounts around Chaum's protocol appear unaware of the issues I came across, as addressed in chapter 2. Namely, how to preserve correctness when clients join/leave the network during protocol execution or the necessity of a length-calculation round between voting phase and communication phase.
  
- The literature I reviewed, however, positive in supplementing Chaum's protocol with interesting solution for the key exchange phase; solution for identifying malicious attackers;
+Indeed, some academic papers bring elaborate contributions to the protocol's limitations, such as how to detect malicious attackers or how to exchange secret keys securely. Nonetheless, as most academic debates advance theoretical solutions on top of Chaum's theory, they were only partially helpful because my project was practical and centred around Chaum's principles. 
+
+On the other hand, also the few attempts to build a simulation add little value to the topic as they are clearly not committed to replicate the protocol faithfully. I have shown in chapter 2 that these tools are, at best, uncompleted attempts, do not follow the distributed architecture of the protocol, have clunky set-ups and display poor user interfaces. 
+
+In this spectrum, my work sits rather originally. My simulation tool is a real-time web application deployed live at \url{https://dc-net.herokuapp.com/}. The implementation met all the intended requirements both the basic ones, for a simple product, and the advanced ones, for a more complex system with useful functionalities. The effort of overcoming complications along the way has led to a series of unanticipated reflections. Put together, these observations on the work performed represent a complementary contribution to the wealth of academic papers on the DC-Net protocol.
+
+To sum up, the running thread throughout the paper is the acknowledgement of disparity between the theoretical perfection of the DC-Net protocol and the practical difficulties of implementation. I have not resolved this gap but I clearly show that it is not possible to overcome the complications of the real world with the same level of perfection of the theory. 
+
+The DC-Net protocol is widely deemed unpractical but my attempt to make it work shows a lot of untackled areas that are important to address and I hope this triggers a discussion closer to the real world. 
  
-Nonetheless, since the academic debate stays in the abstract and do not dare to sail the dangers waters of the real-world, there is only so far that you can go. 
 
-
-The very few attempts to build a simulation are not committed. Most tools seem uncompleted attempts to simulate the protocol, 
-
-
-My work sits in this space very originally. 
-
-I aimed at building a very usable tool, and in the early stages I had to take a number of design choices. Thinking about the protocol in realistic term to have a working implementation I met some roadblocks for which I came up with my own design choices. 
-
-I then proceeded to implement such design in the form of a web application, that clearly addressed all the weakneesses of similar solution. 
-
-Because there is a certain complexity to translate the concepts from theory to practise, the project was divided in basic and advanced requirement as a form of prioritization. 
-
-
-The implementation met all the intended requirements both the basic ones, for an acceptable product, and the advanced ones, for a more complex system with useful functionalities. A number of roadblocks arose throughout the development of the project: - metti i roadblocks. 
-
- The effort of putting a theoretical protocol in practice, i.e. overcoming complications that arose during each step of development, has triggered a series of reflections. Put together, these observations on the work performed, represent a complementary contribution to the wealth of academic papers on the DC-Net protocol, which focus almost entirely on theoretical considerations.
-
-The overarching theme throughout the paper has been that there is a disparity between the theoretical perfection of the DC-Net protocol and the practical difficulties of deployment. 
- I have not resolved this gap but I clearly show that it is not possible to overcome the complications of the real world with the same perfection of the theory. 
- 
- deemed unpractical but my attempt to make it 2work shows a lot of untackled areas that are important to address and I hope this triggers a discussion closer to the real world. 
- 
- 
- I have contextualised the issue of anonymity vs untraceability, due to the fact that these are difficult concepts to reason about. 
- 
- (Anonymity entail untraceability but not vice versa. Therefore anonymity is a stronger form of untraceability.
- 
- 
- The report started with a conceptual distinction between anonymity and untraceability.
- 
- 
  
 
 
 
 
-The report started giving an in-depth presentation of this security protocol, to then move to the explanation of the implementation process, starting from design and ending with testing. 
-
-The need to develop such a tool was found in the lack of interesting practical works on this protocol, which is however addressed extensively by academic theoretical works. 
-
-
-As a consequence of meeting these challenges, my contributions are: a proposal of diving the communication in voting, length-calculation and communication round (instead of voting and communication rounds); detecting collision by storing secret keys on the server; using 8-bit keys that allow a message to be any number from 0 to 255, which allows to interpret an anonymously shared message with the EASCII encoding standard in order to share useful human-readable messages. In addition, also the simulation tool published live at \url{https://www.dc-net.herokuapp.com} is a practical contribution for the community. 
-
-Most importantly, the difficulties encountered during the development expanded further the goal of creating a simulation tool by also offering, as a contribution, an analysis presented in the evaluation which appreciates the discrepancy between theory and implementation of the Dining Cryptographers protocol.
 
 
 
 \section{Future Works}
-There are a number of future works to recommend in order to further move the simulation closer to a fully working implementation of the protocol.
+There is a number of future works to recommend in order to further move the simulation closer to a fully working implementation of the protocol, as well as generally improve the quality of the project.
 
 
-\subsection{Server Trust Issue}
-how? ssl for authentication
+\subsection{Improve codebase}
+An consistent effort was made to ensure code quality throughout the project. I tried to use immutable code where possible, follow JavaScript naming conventions, and give meaningful names to functions and variables. In addition, I tried to make a division between logic and presentation code. However, there is space for improvement especially for this last aspect. In fact, I did not always ensure this separation as I have been learning throughout the project how to use specific libraries such as socket.io and how to properly deal with callbacks.
 
-\subsection{Secure Key-Exchange at protocol level}
-Diffie-Hellman
+This improvement is forward-thinking, in the hope to further expand the project, increase test coverage of logic components, and build more modular code to possibly ease others into contributing to the codebase.
 
-\subsection{Detect Collusion}
-Fail-Stop key Generation
 
-\subsection{Session object wrapper}
+\subsection{Further mechanism to ensure Availability}
+The main security goal of the DC protocol is untraceability. However, an effort to ensure availability was also made by preventing a participant to win two consecutive voting rounds. Though, availability could be preserved even more by setting a time limit to provide an answer to the voting round. Right now a non-cooperating participant could simply not provide an answer to the voting round to affect the protocol execution. Time limit and number of attempts is only set on the length-calculation round. Moreover, there is no limit to the sentence length that a participant may provide. Therefore, an attacker may affect availability simply by providing an extremely long message.
+
+To sum up, limiting time to provide responses and limits on the message length could prevent potential attacks on availability.
+
+
+\subsection{Exchange key security at protocol level}
+The simulation securely exchanges secret keys over \lstinline{https} protocol. This is an opinionated way to protect the key exchanged. In other words, the assumption of my simulation is that it is a web application and can make use of SSL. However, it would be more appropriate to use public cryptography to ensure a secure key exchange process at protocol level. The two main options is to use Diffie-Hellman key exchange between the client and the server, or exchange RSA public keys to encrypt the DC-Net round keys.
+
+\subsection{Full-Mesh Key-Exchange Graph against Collusion}
+As collusion was a limitation not addressed in this project. In order to create a network that is more resilient against possible collaborating attackers, a full-mesh topology of adjacency relations can be employed by the system. This implies that there will be a secret random key between any two cryptographers in the network. This system is known to be less vulnerable to collusion attacks and could further ensure untraceability.

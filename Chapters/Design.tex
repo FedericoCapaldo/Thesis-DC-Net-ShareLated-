@@ -1,11 +1,13 @@
 \chapter{Design} \label{chapter:design}
-This chapter of the report presents the DC-Net simulator architecture through the utilization of UML diagram notations.
+This chapter presents the DC-Net simulator architecture through the utilization of UML diagram notations.
 
-Firstly, I explain the reasons behind my design choices. Secondly, I present the architecture of the simulator alongside an example of how the event-based communication occurs. Lastly, there is a series of sequence diagrams that exemplifies the data flow between clients and server both for the basic and advanced implementations of the protocol. All of the technologies that happen to be mentioned in this chapter will be presented properly in the implementation section (chapter \ref{chapter:implementation}).
+Firstly, I explain the reasons behind my design choices. Secondly, I present the architecture of the simulator alongside an example of how the event-based communication occurs. Lastly, there is a series of sequence diagrams, that exemplifies the data flow between clients and server, both for the basic and advanced implementations of the protocol.
+
+All the technologies that are mentioned in this chapter will be presented in the implementation section (chapter \ref{chapter:implementation}).
 
 
 \section{Design Choices}
-Throughout the project, I took a number of decisions about the architecture of the simulator. This section justifies these decisions also including which are the original choices proposed by me. 
+Throughout the project, I took a number of decisions about the architecture of the simulator. This section justifies these decisions and also include the original choices proposed by me. 
 
 \subsection{Web Application}
 The simulation will be a real-time web-based application that resembles the dynamics of the Dining Cryptographers. I deem choice of a web application appropriate for three reasons:
@@ -38,16 +40,20 @@ Besides the choices presented above, I propose a number of original features to 
 
 \subsubsection{Three types of rounds (voting, length-calculation, communication)} \label{sec:threeRoundTypes}
 
-Proposals to extend the protocol to multiple rounds of communications in the literature, usually divide communication in a voting phase and a actual sending phase. Although this approach is the same proposed for my implementation, I identified the necessity of a third type of round: length-calculation round. This lead to the choice of splitting the protocol execution in voting, length-calculation and communication rounds. 
+Proposals to extend the protocol to multiple rounds of communications in the literature, usually divide communication in a voting phase and a actual sending phase. Although this approach is the same proposed for my implementation, I identified the necessity of a third type of round: length-calculation round. 
+
+This requirement stems from the fact that the server needs to know the length of the sentence that will be shared, so as to generate an equal amount of secret keys needed for the communication rounds. However, the message sender cannot directly communicate the length of his sentence to the DC-Net service, otherwise he would be easily identified by an eavesdropper. Instead, this length-communication round allows the sender to hide his response containing the length of the message with the other clients' round responses.
+
+Therefore, this necessity leads to the choice of splitting the protocol execution in voting, length-calculation and communication rounds. 
 The details of each phase is the following:
 \begin{enumerate}
     \item \textbf{voting}: participants that would like to send a message try to win the right to do so. Only one user can win a voting round, who becomes the message sender. The key range is simply 0 to 1, where the flipping of one's response is understood as an attempt to win the voting phase. This round type is repeated until a participant want to send a message;
-    \item \textbf{length-calculation}: the voting-round winner types the sentence he wants to share anonymously. The message sender will provide this value in the XORed round response. The broadcasted result of this round is therefore the length of the sentence. This information enables the DC-Net service to compute the same number of keys as the length of the sentence before the communication rounds starts. These keys will be delivered in bulk to the participants; The key range chosen for the length-calculation round is 100 to 999. The reason behind this choice is to avoid a scenario in which all randomly generated keys inside the network are very close to 0 and the sentence provided is of greater length. This is likely to reveal the identity of the message sender by simply determining which round response that the server receives is the longest. This round type lasts 10 seconds and can be repeated three times, after which the protocol is aborted.
-    \item \textbf{communication}: as many rounds as the message length occur to allow the message sender to anonymously share all characters of the sentence in the form of EASCII codes. The result of this phase will be an anonymously broadcasted sentence into the whole network. The key range is 0 to 255, since the EASCII encoding, explored in the next section, has 256 characters. At the end of this phase, a new voting round starts.
+    \item \textbf{length-calculation}: the voting-round winner types the sentence he wants to share anonymously. The message sender will provide the length of the sentence in the XORed round response of this round. The broadcasted result of this round is therefore the length of the sentence. This information enables the DC-Net service to compute the same number of keys as the length of the sentence before the communication rounds starts. These keys will be delivered in bulk to the participants; The key range chosen for the length-calculation round is 100 to 999. The reason behind this choice is to avoid a scenario in which all randomly generated keys inside the network are very close to 0 and the sentence provided is of greater length. This is likely to reveal the identity of the message sender by simply determining which round response that the server receives is the longest. This round type lasts 10 seconds and can be repeated three times, after which the protocol is aborted.
+    \item \textbf{communication}: as many rounds as the message length occur to allow the message sender to anonymously share all characters of the sentence in the form of EASCII codes. The result of this phase will be an anonymously broadcasted sentence into the whole network. The key range is 0 to 255, since the EASCII encoding, explored in the next section, has 256 characters. At the end of this phase, the whole sentence received is displayed on the client's browser, and a new voting round starts.
 \end{enumerate}
 
 
-\subsubsection{Extended ASCII encoding interpretation}
+\subsubsection{Extended ASCII encoding interpretation} \label{sec:eascii1}
 To exchange meaningful human-readable messages, I advance the idea of using 8-bit keys during communication rounds and interpret each round result as an Extended ASCII encoded character. 
 EASCII encoding is a standard that uses 8 bits (0 to 255) to represent letters, numbers, and symbols.  It is to be noted that regular ASCII has values from 0 to 127 (figure \ref{fig:ascii}), and these are extended with more symbols to 255 in the Extended ASCII version (figure \ref{fig:eascii}). 
 
@@ -183,7 +189,7 @@ Figure \ref{fig:successfulRound} represents the complete data flow of a successf
     \item the round result is broadcasted in no particular order and the protocol execution is completed.
 \end{enumerate}
 
-\textbf{It is the presence of step number 6, alongside the XOR of the secret keys, that offers sender anonymity. All participants send a response to the server regardless of whether they are sending a message in their response. Consequently, a sender participant who is actually hiding a message in his response cannot be singled out.}
+\textbf{It is the presence of step number 6, alongside the XOR of the secret keys, that offers sender anonymity. All participants send a response to the server regardless of whether they are sending a message in their response. Consequently, a sender participant, who is actually hiding a message in his response, cannot be singled out.}
 
 \begin{figure}[H]
     \centering
@@ -204,10 +210,12 @@ Figure \ref{fig:abortedRound} presents the dynamics of the DC protocol execution
 
 As we have seen, there is a number of steps involved even in just a single round of communication. To simplify the representation of the following graph with advanced features, a successful protocol execution as represented in figure \ref{fig:successfulRound} can be condensed like in figure \ref{fig:singleRoundCondensed}.
 
+It is to be noted that connection events, round responses from the clients to the server, and key sharing messages or broadcast from the server do not happen in any particular order.
+
 
 
 \subsection{Design of Advanced Data Flow}
-The advanced data flow diagrams aim at explaining the exchange of data between the client and the server that make use of the advanced features: collision detection, resilient execution with nth participant disconnection during the round, protocol divided in voting, length-calculation and communication round.
+The advanced data flow diagrams aim to explain the exchange of data between the client and the server that make use of the advanced features: collision detection, resilient execution with nth participant disconnection during the round, protocol divided in voting, length-calculation and communication round.
 
 \begin{figure}[H]
     \centering
@@ -216,7 +224,7 @@ The advanced data flow diagrams aim at explaining the exchange of data between t
     \label{fig:collisionDetection}
 \end{figure}
 
-Figure \ref{fig:collisionDetection} represents the collision detection feature. The schema, assumes that participants already connected to the server at a previous time as the diagram starts from the adjacency and key generation phase for the sake of brevity.
+Figure \ref{fig:collisionDetection} represents the collision detection feature. The schema assumes that participants already established a connection to the server before as the diagram starts from the adjacency and key generation phase for the sake of brevity.
 
 Client P2 is the first client that hides a message in his response, i.e. flipped a message. Therefore, he is deemed as the message sender by the server. Then, client P3 also tries to flip his response. However, after the last response is received, namely the one of client P1, the server notifies client P3 that his message was rejected.
 

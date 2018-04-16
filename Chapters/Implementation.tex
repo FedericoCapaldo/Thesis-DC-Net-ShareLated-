@@ -1,5 +1,5 @@
 \chapter{Implementation} \label{chapter:implementation}
-This chapter explores the development phase of the simulator following the outlined design structure. The implementation of the project took place in iterations in order to prioritize features and to decrease the overall complexity of implementing all the requirements at once. The complete source code can be found in Appendix \ref{appendix:code}. Appendix \ref{appendix:userGuide} explains how to use the simulation tool, and Appending \ref{appendix:setupguide} explains how to run the code locally.
+This chapter explores the development phase of the simulator following the outlined design. The implementation of the project took place in iterations in order to prioritize features and to decrease the overall complexity of implementing all the requirements at once. Appendix \ref{appendix:code} contains the complete source code. Appendix \ref{appendix:userGuide} explains how to use the simulation tool. Appending \ref{appendix:setupguide} explains how to run the application locally.
 
 
 \section{Introducing used Technologies}
@@ -85,7 +85,7 @@ Firstly, the code is uploaded on Github, a code-sharing platform where a user ca
 
 Secondly, through the presence of a webhook on Github, a code update will trigger the automatic execution of unit-tests in Circle CI (continuous integration). This ensures that new features did not break functionalities previously built.
 
-Lastly, If all tests successful the code is automatically released on the web hosting platform Heroku. The application is in fact available at \url{https://www.dc-net.herokuapp.com}.
+Lastly, If all tests successful the code is automatically released on the web hosting platform Heroku. The application is in fact available at \url{https://dc-net.herokuapp.com/}.
 
 \begin{figure}[h!]
     \centering
@@ -100,7 +100,7 @@ This section presents the main components of the simulator implemented at the co
 \emph{Please note that all the features presented are implemented in the code. However, some of the code snippets presented in this section are not exactly the same as in the source code, since the version provided in the appendix is the final product that also includes the advanced requirements.}
 
 \subsection{Initial Connection} \label{sec:initialConnection}
-A client that connects to the server, by typing \lstinline{https://www.dc-net.herokuapp.com} in his browser, will automatically trigger a socket \lstinline{connection} event. This turns the simple \lstinline{HTTP get} request of the page into a \lstinline{TCP} session. This happens thanks to a \lstinline{HTTP Upgrade} request. The result is a stable open connection between a client and a server, and both ends listen to incoming \lstinline{socket.io} events.
+A client that connects to the server, by typing \lstinline{https://dc-net.herokuapp.com/} in his browser, will automatically trigger a socket \lstinline{connection} event. This turns the simple \lstinline{HTTP get} request of the page into a \lstinline{TCP} session. This happens thanks to a \lstinline{HTTP Upgrade} request. The result is a stable open connection between a client and a server, and both ends listen to incoming \lstinline{socket.io} events.
 
 
 \subsection{Socket.io communication example}
@@ -273,7 +273,7 @@ Once all the results reach the server, its role is to combine them so as to reve
 
 
 \subsection{A round of communication}
-Using the logic components, the most important of which were presented above, jointly with socket.io events the protocol is successfully carried out (figure \ref{singleRoundExecuted}).
+Using the logic components, the most important of which were presented above, jointly with socket.io events the protocol is successfully carried out (figure \ref{fig:singleRoundExecuted}).
 
 \begin{figure}[H]
     \centering
@@ -354,13 +354,13 @@ It is important to note that modern browsers allow a limited number of persisten
 
 
 \subsection{Voting, Length-Calculation, Communication Round}
-The final simulator includes three types of rounds as first presented in section \ref{sec:advancedReq}. Each type of round has its own dedicated functions to start the round, to generate and share secret keys, handle results on the server and so on. This is due to the fact that despite being similar, each of the round types presents some variations.
+The final simulator includes three types of rounds as first presented in section \ref{sec:threeRoundTypes}. Each type of round has its own dedicated functions to start the round, to generate and share secret keys, handle results on the server and so on. This is due to the fact that despite being similar, each of the round types presents some variations.
 
 The voting round uses 1-bit keys and it tries to simply determine who will send a message. This round type is repeated until someone decides to send a message and wins the voting round.
 
-The length-calculation rounds allows the message sender to provide a sentence, in the time span of 10 seconds. After this time, all participants browsers, including the non sender's one, will automatically dispatch the response to the server. The time span is fixed for all participants, to avoid a scenario in which the message sender takes a long time to write a message. In such case, the sender would be reveal by simply looking at the which message was received last by the server. Due to the limited time frame, the message sender has 3 attempts to provide the sentence. In addition, the key will be a secure random value in between 100 and 999. I chose this range to avoid a scenario in which all the secret keys are very short numbers to be XORed with the message length. If this latter value would be considerably longer than the keys themselves, untraceability of the sender could be compromised by looking at which is the greater response sent to the server. 
+The length-calculation rounds allows the message sender to provide a sentence, in the time span of 10 seconds. After this time, all participants browsers, including the non sender's one, will automatically dispatch the response to the server. The time span is fixed for all participants, to avoid a scenario in which the message sender takes a long time to write a message. In such case, the sender would be reveal by simply looking at the which message was received last by the server. Due to the limited time frame, the message sender has 3 attempts to provide the sentence. In addition, the key is a secure random value in between 100 and 999. 
 
-Lastly, there is a number of communication rounds, one for each letter of the sentence provided. These rounds happens with a short delay between each other, and at the end the aggregate message received will be shown. Communication round use 8-bit keys, useful to hide the corresponding number of a EASCII character, as explained in the next section. In order to generate n keys, I employed the \lstinline{crypto} JavaScript in-built module to generate an array of cryptographically secure pseudo-random numbers.
+Lastly, there is a number of communication rounds, one for each letter of the sentence provided. These rounds occur with a short delay between each other, and at the end the aggregate message received will be shown. Communication round use 8-bit keys, useful to hide the corresponding number of a EASCII character. This is explained in section \ref{sec:eascii1} and an example is provided in section \ref{sec:easciiExample1}. In order to generate n keys for the communication round, I employed the \lstinline{crypto} JavaScript in-built module to generate an array of cryptographically secure pseudo-random numbers.
 
 \begin{lstlisting}
     function secureRandomKeyArrayOfLength(n) {
@@ -373,7 +373,7 @@ Lastly, there is a number of communication rounds, one for each letter of the se
 \end{lstlisting}
 
 
-\subsection{EASCII encoding conversion}
+\subsection{EASCII encoding conversion} \label{sec:easciiExample1}
 As one of the main contributions, I proposed to interpret a the value of a round message as a EASCII code. Thus, the sentence provided by the message sender (figure \ref{fig:exampleMessage}) will be a series of EASCII characters (figure \ref{}), and at each communication round the corresponding EASCII code of the nth letter will be XORed with the two secret keys that the sender participant possess.
 
 \begin{figure}[H]

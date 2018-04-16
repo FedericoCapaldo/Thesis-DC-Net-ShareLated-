@@ -1,4 +1,7 @@
 \chapter{Evaluation}
+
+
+
 This chapter contains a personal reflection on the implemented protocol. 
 
 CAMBIA: to present its strength, to assess its contribution to academia,  and weaknesses, to identify possible areas of improvement. 
@@ -7,7 +10,7 @@ CAMBIA: to present its strength, to assess its contribution to academia,  and we
 The simulation implemented met all the basic requirements and advanced requirements outlined in section \ref{sec:requirements}. Not only the simulation performs the core multi-party XOR computation of three entities, but it also acknowledges several limitations proposing solutions to each one:
 \begin{itemize}
     \item message collisions are detected;
-    \item the communication occurs in different types of rounds (voting, length calculation and communication) so as to send longer messages;
+    \item the communication occurs in different types of rounds (voting, length-calculation and communication) so as to send longer messages;
     \item I adopt EASCII encoding to translate the result of communication rounds into letters so as to communicate human-readable messages;
     \item any number of participants can join or leave the network during the protocol execution without affecting the correctness of the messages exchanged;
 \end{itemize}
@@ -94,22 +97,23 @@ Although I presented this example in the known limitations of my simulator, this
 \subsection{Necessity of a length-calculation round}
 A proposal to extend the protocol to multiple rounds of communications is offered by many academic figures. This divides communication in a voting phase and a actual sending phase.
 
-Although this approach is the same proposed for my implementation, I identified the necessity of a third type of round was identified: length-calculation round. This leads to a division of the protocol execution in voting, length-calculation and communication rounds. The newly introduced round type has the purpose of allowing the message sender to communicate the length of the sentence to the server without being traced by potential eavesdroppers. I deemed this step necessary, since in my implementation the server needs to compute the same number of keys as the length of the sentence before the communication rounds start. Without this intermediate round type, a message sender that will directly communicate the length of the message to the server would be trivially identified by an eavesdropper.
+Although this approach is the same proposed for my implementation, I identified the necessity of a third type of round was identified: length-calculation round. This leads to a division of the protocol execution in voting, length-calculation and communication rounds, explained in section \ref{sec:threeRoundTypes}. 
+The newly introduced round type has the purpose of allowing the message sender to communicate the length of the sentence to the server without being traced by potential eavesdroppers. I deemed this step necessary, since in my implementation the server needs to compute the same number of keys as the length of the sentence before the communication rounds start. Without this intermediate round type, a message sender that will directly communicate the length of the message to the server would be trivially identified by an eavesdropper.
 
 The need of this step was never found in the theoretical works that simply propose to divide the protocol in voting and communication rounds.
 
 
 \subsection{Difficulty of ensuring fair use of network}
-DC-Net protocol focuses on untraceability. When looking at the implementation of a software, however, another main security goal to be guaranteed is availability. In the context of the implemented simulation, a malicious participant could decide to hog the service and make it unavailable by continuously attempting to win the voting round. To counteract this issue, I implement a feature that prevents the message sender to win the next voting round. By doing so, a malicious participant trying to hog the service, can succeed only half of the time (one round yes and one round no).
+DC-Net protocol focuses on untraceability. When looking at the implementation of a software, however, another important security goal to be guaranteed is availability of the network. In the context of the implemented simulation, a malicious participant could decide to hog the service and make it unavailable by continuously attempting to win the voting round. To counteract this issue, I implement a feature that prevents the message sender to win the next voting round. By doing so, a malicious participant trying to hog the service, can succeed only half of the time (one round yes and one round no).
 
 However, the ideal solution to ensure fairness in the network usage is to implement a queue. The server would make use of this data structure to record the chronological order of attempts by the participants to send a message. This allows a participant to send a message when he reaches the front of the queue. Nonetheless, this is a very fiddly feature to implement due to intricate possible scenarios. 
 
 
-An example of how complicated this quickly becomes is the following. There are at least two cryptographers in the sending queue who tried to win the voting round simultaneously. At the start of the new round the user at the front of the queue is asked if he would still like to send a message. The first issue raised is that this question cannot be a unicast message between the client and the server. Otherwise if after this communication the length-calculation round happens, it would be obvious who the sender is. Therefore, to maintain untraceability this question would require a further type of broadcast round. 
+An example of how complicated this quickly becomes is the following. There are at least two cryptographers in the sending queue, who tried to win the voting round simultaneously. At the start of the new round, the user at the front of the queue is asked if he would still like to send a message. The first issue raised is that this question cannot be a unicast message between the client and the server. Otherwise, it would be obvious who the sender is. Therefore, to maintain untraceability this question would require a further type of broadcast round. 
 
-Furthermore, there are particular edge cases to be addressed. For example, what happens if the cryptographer, front of the queue, accepted to send a message but then disconnects? It is likely that that the same offer of sending a message should be made to the new first user in the queue, having to repeat another broadcast round just to ask this. Hence, implementing a queue of message senders risks to make the protocol to repeat the voting phase several times. This is the completely counterproductive since it could affect the availability of the service ,which was the issue that the queue set out to solve in the first place. 
+Furthermore, there are particular edge cases to be addressed. For instance, what happens if the cryptographer, at the front of the queue, accepts to send a message but then disconnects? It is likely that that the same offer of sending a message should be made to the new first user in the queue. Therefore, another round of broadcast would be required. Hence, implementing a queue of message senders risks to make the protocol to repeat the voting phase several times. This is the completely counterproductive since it could affect the availability of the service ,which was the issue that the queue set out to solve in the first place. 
 
-This is an excellent instance of how an implementation can get highly difficult rather quickly. \newline \newline
+This is an excellent example of how an implementation can get complex rather quickly. \newline \newline
 
 
 

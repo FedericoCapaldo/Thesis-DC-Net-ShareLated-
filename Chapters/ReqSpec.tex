@@ -75,15 +75,15 @@ I propose the following advanced features: an arbitrary number of participants i
 
 \textbf{Arbitrary number of participants:} the protocol can be executed with any number of clients in the network, as long as the minimum number of three clients is present. The protocol execution starts with the generation of adjacencies and the key generation for each of them. Therefore, a participant that connects after the beginning of a round has to wait the end of current execution before participating in the communication. In the advent of a participant disconnection during the protocol, as long as at least three participants are still connected, the system implemented is resilient enough to complete the round. \newline
 
-\textbf{Longer messages:} the simulation does not terminate after the execution of a single round, but it keeps repeating itself as long as three participants are connected. Moreover, longer secret keys are used. This implies that the key values will be random numbers in the range that the key length allows, e.g. 8-bit keys have a range of 0 to 255. Thus, a participant intending to send a message, can XOR his two secret keys with a number in the same range as the keys. In other words, the message that a participant can XOR with his secret keys is no longer just 0 or 1, but it can be a larger chosen number, as long as it is smaller than the largest possible key value. 
+\textbf{Longer messages:} the simulation does not terminate after the execution of a single round, but it keeps repeating itself as long as three participants are connected. Moreover, longer secret keys are used. This implies that the possible key values are random numbers in the range that the key length allows, e.g. 8-bit keys have a range of 0 to 255. Thus, a participant intending to send a message, can XOR his two secret keys with a number in the same range as the keys. In other words, the message that a participant can XOR with his secret keys is no longer just 0 or 1, but it can be a larger chosen number, as long as it is smaller than the largest possible key value. 
 
 The concept of longer keys allows the interpretation of a round message as an ASCII code. This is my own proposal that will be presented in chapter \ref{chapter:design}. For now, it is enough to know that ASCII encoding is a technique employed in the final implementation to convert a numerical round result into a letter. \newline
 
 \textbf{Collision detection:} Collisions can happen during a single round if multiple participants try to send a message concurrently. And it can also happen across rounds, if a participant would like to send a sentence, one character per round, across multiple rounds. Both cases are addressed.
 
-To spot and prevent collisions in a single round, the server stores the keys generated in each round for all participants. When the server receives the round message of a participant, this is compared against the XOR of the two stored key. This comparison will reveal if a participant is trying to send a message. Therefore, the quickest to provide their reply will be able to send a message in this round. Otherwise, the participants who attempted to send a message in vain will be notified, at the end of the round, that their message was rejected. 
+To spot and prevent collisions in a single round, the server stores the keys generated in each round for all participants. When the server receives the round message of a participant, this is compared against the XOR of the two stored key. This comparison reveals if a participant is trying to send a message. Therefore, the quickest to provide his reply has his message accepted for this round. Otherwise, the participants who attempted to send a message in vain will be notified, at the end of the round, that their message was rejected. 
 
-To prevent collisions across multiple rounds the communication will be divided into different types of rounds: voting, length-calculation, and communication rounds. Firstly, participants express their interest in sending a message during the voting round. Only one participant can win per voting round and the others will receive a 'message rejection' notification. During the length-calculation round the message sender will provide their message, which will then be distributed one character a time in a number of communication rounds. These three phases will rerun in the same order continuously. A message sender will not be allowed to win the following voting round, so as to prevent a user to hog the channel of communication. The specifics of these three types of rounds and the message rejection feature, which has some weighty consequences on the protocol, are both explored in more details in chapter \ref{chapter:design}.
+To prevent collisions across multiple rounds the communication is divided into different types of rounds: voting, length-calculation, and communication rounds. Firstly, participants express their interest in sending a message during the voting round. Only one participant can win per voting round and the others will receive a 'message rejection' notification. During the length-calculation round the message sender provides the desired sentence, which will then be distributed one character a time in a number of communication rounds. These three phases rerun in the same order continuously. A message sender is not be allowed to win the following voting round, so as to prevent a user to hog the channel of communication. The specifics of these three types of rounds and the message rejection feature, which has some weighty consequences on the protocol, are both explored in more details in chapter \ref{chapter:design}.
 
 
 \subsubsection{Functional Requirements}
@@ -94,7 +94,7 @@ To prevent collisions across multiple rounds the communication will be divided i
     \item AFUN4 - Detect multiple senders in the same round to avoid message collisions;
     \item AFUN5 - Divide communication into three types of rounds: voting, length-calculation, communication rounds (explained in the section \ref{sec:threeRoundTypes});
     \item AFUN6 - Reject clients that did not win the voting round to avoid message collisions in communication rounds;
-    \item AFUN7 - Allow user that won the voting round (i.e. message sender) three attempts to provide their own text message in the length calculation round;
+    \item AFUN7 - Allow user that won the voting round (i.e. message sender) three attempts to provide their own text message in the length-calculation round;
     \item AFUN8 - Enable secret keys generation in bulk on the DC-Net server based on the result of length-calculation round;
     \item AFUN9 - Convert each letter of the message provided by the message sender into the corresponding ASCII characters;
     \item AFUN10 - At the termination of communication rounds, display the aggregate message that the user received;
@@ -114,7 +114,7 @@ In addition to the basic security requirements. The following will also be neces
     \item ASEC2 - Abort communication when the message sender disconnects from the network;
     \item ASEC3 - Abort communication if all participants try to send a message in the same round;
     \item ASEC4 - Synchronize clients' responses for the length-calculation round to avoid the uncovering of the message sender;
-    \item ASEC5 - Implement a three-digit key range (100-999) for the length calculation round to ensure hiding of message length (otherwise message sender would be easily spotted if all generated keys were close to 0 and shorter than the message length).
+    \item ASEC5 - Implement a three-digit key range (100-999) for the length-calculation round to ensure hiding of message length (otherwise message sender would be easily spotted if all generated keys were close to 0 and shorter than the message length).
 \end{enumerate}
 
 
@@ -366,5 +366,5 @@ ASEC3 & Abort communication if all participants try to send a message in the sam
 \hline
 ASEC4 & Synchronize clients' responses for the length-calculation round to avoid the uncovering of the message sender; & trigger a 10 second timer when each client received the length-calculation round keys, so that the interval to dispatch the round response event will be equal for all clients.\\
 \hline
-ASEC5 & Implement a three-digit key range (100-999) for the length calculation round to ensure hiding of message length; & Provide different minimum and maximum parameters for the csprng.\\
+ASEC5 & Implement a three-digit key range (100-999) for the length-calculation round to ensure hiding of message length; & Provide different minimum and maximum parameters for the csprng.\\
 \end{longtable}

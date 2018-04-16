@@ -246,7 +246,7 @@ The following is the scenario and procedure of the protocol executed with the mi
 
 From now on, the dinner analogy language and the formal graph notation will be used interchangeably. \newline \newline \newline
 
-\section{Limitations} \label{sec:limitations}
+\section{Protocol Limitations} \label{sec:limitations}
 As already mentioned, the Dining Cryptographer is a very effective protocol to guarantee sender anonymity in \textit{theory}. In reality, there are some limitations, which affect the practicality of the protocol in a real-world use to the point there does not exist a fully-working version of this protocol.
 The three main limitations we now turn to explore are: message collision, communication disruption and communication overhead. 
 
@@ -421,46 +421,62 @@ The scarcity and defective state of accessible simulations is the leading drive 
 Researching the wide internet for simulations has proved unsuccessful as this leads to academic papers. A more sensible approach to find possible implementations had been to search through the development platform GitHub. Below are some implementation found, which highlight the shortcomings of the current state of art in DC-Net implementations.
 
 \subsection{Example 1}
-The first is a command line tool that presents extensive documentation, which appears to be very handy (figure \ref{fig:work1documentation}). However, all the commands listed in the documentation do not work, return errors, and there is no troubleshooting guide (figure \ref{fig:work1error}).
+The first project found (\url{https://github.com/25A0/DCnet}) is a command line tool that presents extensive documentation, which appears to be handy at first (figure \ref{fig:work1documentation}).
 
-\begin{figure}[h!]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{Images/work1WellDocumented.png}
+    \fbox{\includegraphics[width=0.7\textwidth]{Images/work1WellDocumented.png}}
     \caption{Extensive encouraging documentation.}
     \label{fig:work1documentation}
 \end{figure}
 
-\begin{figure}[h!]
+Several attempts have been made to understand the program and run it through that documentation. However, all the commands listed do not seem to work, return errors, and there is no troubleshooting guide (figure \ref{fig:work1error}).
+
+
+\begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{Images/work1WellDocumentedError.png}
+    \fbox{\includegraphics[width=0.7\textwidth]{Images/work1WellDocumentedError.png}}
     \caption{Error by following documentation commands.}
     \label{fig:work1error}
 \end{figure}
 
-Despite being the best documented project found, there is no setup guide, and the project does not seem to be running in order to solve these issues (last commit over two years ago).
+Despite being the best documented project found, there probably are some assumptions on the needed components to run the project that are not included in the documentation. Furthermore, the project does not seem actively maintained in order to solve this issue, since last commit dates back to two years ago. 
 
 \subsection{Example 2}
-Another command line tool found relies on the PubNub as a service to implement the publish subscriber pattern. However, there are no examples of how to configure key files neither on PubNub nor on the documentation of the GitHub project (figure \ref{fig:work2documentation}). Trying to run the software with sample key files results in unhelpful errors(figure \ref{fig:work2error}). 
+A second project found (\url{https://github.com/gsoltis/DiningCryptographers}) seems to rely on a technology called PubNub as a service to implement the publish-subscriber pattern. However, it seems that there are no examples of how to configure the required key files neither on PubNub nor in the documentation of the project itself (figure \ref{fig:work2documentation}).
 
-\begin{figure}[h!]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{Images/work2Documentation.png}
+    \fbox{\includegraphics[width=0.7\textwidth]{Images/work2Documentation.png}}
     \caption{Documentation instructions but not examples.}
     \label{fig:work2documentation}
 \end{figure}
 
-\begin{figure}[h!]
+Attempting to write a sample key file and run the software results in unhelpful errors(figure \ref{fig:work2error}). 
+ 
+\begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{Images/work2Error.png}
+    \fbox{\includegraphics[width=0.7\textwidth]{Images/work2Error.png}}
     \caption{Error by trying to run tool with a sample pubnub{\_}keys.cfg.}
     \label{fig:work2error}
 \end{figure}
 
-Even if it was to run, this program does not provied a distributed architecture on multiple nodes, so as to resemble closely the multi-party computation.
+Additionally, by looking at the source code, even if the project were to run, this simulation does not provide a distributed architecture on multiple nodes, a condition that would closely resemble the multi-party computation of the Dining Cryptographers. \newline
+
+
+A comprehensive list of software found on Github is the following: 
+\begin{itemize}
+    \item \url{https://github.com/ArturWierzbicki/dining-cryptographers}
+    \item \url{https://github.com/Moonlock/DCNet}
+    \item \url{https://github.com/confiks/ipfs-dc}
+    \item \url{https://github.com/austo/xblab}
+    \item \url{https://github.com/joashc/cryptodiner}
+    \item \url{https://github.com/mheinl/golang_Dining_Cryptographers}
+\end{itemize}
 
 
 \subsection{Summary of findings}
-The examples shown above were among the best implementations found and they clearly exemplify the lack of practical work on this topic. All projects found are command-line based prototypes. Many of these either present no documentation whatsoever, or do not address fundamental aspects, such as collision detection, in order to encourage a satisfactory discussion for the realistic implementation of a DC-Net. None of them seems to be usable over an actual network, so as to allow multiple users to carry out the protocol.
+The examples shown above were among the best implementations found and they clearly exemplify the lack of practical work on this topic. All projects found are command-line based prototypes. Many of these either present no documentation whatsoever, or do not address fundamental aspects, such as collision detection, in order to encourage a satisfactory discussion for the realistic implementation of a DC-Net. None of them seem to be usable over an actual network, so as to allow multiple users to carry out the protocol.
 
 In the light of these findings, a simulation tool that both illustrates the protocol and investigates the implementations roadblocks is called for.
 
