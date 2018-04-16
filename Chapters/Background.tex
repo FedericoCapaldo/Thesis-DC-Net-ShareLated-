@@ -34,7 +34,7 @@ In information security, however, considering the types of anonymity set adds an
 \begin{minipage}{.5\textwidth}
     \centering
     \includegraphics[width=0.50\textwidth]{Images/senderAnonymSet.png}
-    \caption{Recipient anonymity set \cite{Franck}}
+    \caption{Sender Anonymity (right) and Recipient anonymity set (left) \cite{Franck}}
     \label{fig:receipientAnonSet}
 \end{minipage}
 \end{figure}
@@ -153,13 +153,20 @@ As demonstrated in the scenarios above, the minimum number of participants requi
 \subsection{A Formal Exposition of the Protocol}
 The analogy above has the purpose of facilitating the more formal exposition of the DC-Net protocol, which we present below. 
 
-The Dining Cryptographers can be represented in graph theory, where each cryptographer is shown as a vertex. The flip coin presented in the analogy corresponds to a key exchange in a formal protocol. This key exchange is represented as an edge between two vertices, i.e. cryptographers. 
+The Dining Cryptographers can be represented in graph theory, where each cryptographer is shown as a vertex. The coin flip presented in the analogy corresponds to a key exchange in a formal protocol. This key exchange is represented as an edge between two vertices, i.e. cryptographers. 
 
 The basic version of the protocol uses one-bit keys. Therefore, only two values are possible, since a single bit can either be a 1 or a 0. From the metaphor of the coin, the head corresponds to a 1 and a tail is a 0 or vice versa.
-The action of 'paying the dinner' corresponds to a participant, ergo a vertex, reversing his outcome before the broadcast. The action of 'announcing the result out loud' is a message broadcasted in the network. Lastly, each anonymous dinner payment is equivalent to a round of communication in which a node may broadcast a message.
 
-\subsubsection{Exclusive OR (XOR)}
-The operations executed by each cryptographer in stage 2 (see section \ref{sec:protocolStages}) to combine the results of different key-exchanges is done through the utilization of a logic operation called \textit{exclusive disjunction} or \textit{XOR}. The logical operation outputs true only if the the input values are different (table \ref{table:XOR}). The symbol of this operation is "$\oplus$".
+The step of deciding whether two coins are equal, in the formal protocol, corresponds to combing the two keys with a logic operation called XOR, presented in section \ref{sec:xor}.
+
+The action of 'paying the dinner' corresponds to a participant, ergo a vertex, XORing his two secret keys with 1, i.e. flipping a response. 
+
+The action of 'announcing the result out loud' is a message broadcasted in the network. Lastly, each anonymous dinner payment is equivalent to a round of communication in which a node may broadcast a message.
+
+\subsubsection{Exclusive OR (XOR)} \label{sec:xor}
+When a cryptographers sees the result of the two coin flips he needs to decide whether the two values are equal. Similarly a node that owns two secret keys needs to combine them. This operation happens through a logic operation called \textit{exclusive disjunction} or \textit{XOR}. 
+
+The logical operation outputs true only if the the input values are different (table \ref{table:XOR}). The symbol of this operation is "$\oplus$".
 
 \begin{table}[h!]
 \centering
@@ -211,7 +218,11 @@ The mathematical properties of the XOR operation are also very relevant for DC-N
 \end{enumerate}
 
 \subsection{Proof of correctness with XOR} \label{sec:xorDemonstration}
-Based on the XOR properties outline above, this section explains why this logical operation allows a participant to share a message anonymously.
+Based on the properties outlined above, this section explains why XOR allows a participant to share a message anonymously. \newline
+
+Assume there are three cryptographers $P_1, P_2, P_3$ that broadcasted the messages $M_1, M_2, M_3$ respectively, and no one flipped their response (i.e. XOR one's message with 1). Since each key is shared between two vertices, it means that there are in total three unique keys. It follows that XORing the three messages with each other equates to XORing each key twice. Therefore, by the associative and self-inverse property, $M_1 \oplus M_2 \oplus M_3$ equals 0. 
+
+If instead a vertex, say $M_3$, flipped their message then, each key would be XORed twice, but there is a 1 that is not. In other words $M_1 \oplus M_2 \oplus (M_3 \oplus 1)$ equals 1.
 
 
 
@@ -355,7 +366,7 @@ The range of possible keys can be incremented by growing the number of bits in a
     \label{fig:xorlongkeys}
 \end{figure}
 
-Figure \ref{fig:xorlongkeys} provides an example of three participants using 8-bit keys. Participant P1 wishes to send the message '97'. To do so, he performs the XOR of his two secret keys, 237 and 66, and message, 97, altogether. The result that he will announce is 206 ($237 \oplus 66 \oplus 97$). The other two participants P2 and P3 simply announce the XOR of their two secret keys as they do not wish to send a message. The final XOR of the round responses of each participant will reveal the hidden message.
+Figure \ref{fig:xorlongkeys} provides an example of three participants using 8-bit keys. Participant P1 wishes to send the message '97'. To do so, he performs the XOR of his two secret keys, 237 and 66, and the message, 97, altogether. The result that he will announce is 206 ($237 \oplus 66 \oplus 97$). The round responses of the two participants P2 and P3 are simply the XOR of their two secret keys as they do not wish to send a message. The final XOR of the round responses will reveal the hidden message.
 
 
 \subsubsection{Multiple Rounds} \label{sec:messageExtentionRounds}

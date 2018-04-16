@@ -1,17 +1,13 @@
 \chapter{Evaluation}
 
-
-
-This chapter contains a personal reflection on the implemented protocol. 
-
-CAMBIA: to present its strength, to assess its contribution to academia,  and weaknesses, to identify possible areas of improvement. 
+This chapter is a reflection on different aspects of the project. Firstly, I evaluate the project against the requirements and compare my work with the other available simulation tools. Secondly, I acknowledge the known limitation of my work. Lastly, I present my appreciation of the difficulties that followed my effort to realize the simulation tool.
 
 \section{Assessment on the implementation against the requirements}
 The simulation implemented met all the basic requirements and advanced requirements outlined in section \ref{sec:requirements}. Not only the simulation performs the core multi-party XOR computation of three entities, but it also acknowledges several limitations proposing solutions to each one:
 \begin{itemize}
     \item message collisions are detected;
     \item the communication occurs in different types of rounds (voting, length-calculation and communication) so as to send longer messages;
-    \item I adopt EASCII encoding to translate the result of communication rounds into letters so as to communicate human-readable messages;
+    \item I adopt Extended ASCII encoding to intepret the result of communication rounds into letters so as to communicate human-readable messages;
     \item any number of participants can join or leave the network during the protocol execution without affecting the correctness of the messages exchanged;
 \end{itemize}
 All of the above takes place with an actual distributed architecture and using a graphical user interface.
@@ -111,12 +107,9 @@ However, the ideal solution to ensure fairness in the network usage is to implem
 
 An example of how complicated this quickly becomes is the following. There are at least two cryptographers in the sending queue, who tried to win the voting round simultaneously. At the start of the new round, the user at the front of the queue is asked if he would still like to send a message. The first issue raised is that this question cannot be a unicast message between the client and the server. Otherwise, it would be obvious who the sender is. Therefore, to maintain untraceability this question would require a further type of broadcast round. 
 
-Furthermore, there are particular edge cases to be addressed. For instance, what happens if the cryptographer, at the front of the queue, accepts to send a message but then disconnects? It is likely that that the same offer of sending a message should be made to the new first user in the queue. Therefore, another round of broadcast would be required. Hence, implementing a queue of message senders risks to make the protocol to repeat the voting phase several times. This is the completely counterproductive since it could affect the availability of the service ,which was the issue that the queue set out to solve in the first place. 
+Furthermore, there are particular edge cases to be addressed. For instance, what happens if the cryptographer, at the front of the queue, accepts to send a message but then disconnects? It is likely that that the same offer of sending a message should be made to the new first user in the queue. Therefore, another round of broadcast would be required. Hence, implementing a queue of message senders risks to make the protocol to repeat the voting phase several times. This is the completely counterproductive since it could affect the availability of the service, which was the issue that the queue set out to solve in the first place. 
 
-This is an excellent example of how an implementation can get complex rather quickly. \newline \newline
-
-
+This is an excellent example of how an implementation can get complex rather quickly. \newline
 
 
-Ultimately, all these various exemplifications of differences between a theoretical protocol and an effective application illustrated the constructive knowledge gained along the hands-on development phase. The purely theoretical argumentation of the protocol presented in many papers rarely offer an appreciation of these practical complex challenges. Hence, these were important remarks to be addressed as a contribution to the academic community.
-
+All in all, building this simulation has been a great opportunity to contribute in an area of DC-Net that lacks satisfactory work, namely simulations tools. However, there is a number of known limitation that leaves room for improvement. Though, the simulation tool turned out to be only one of the contributions to the academic discussion given the personal analysis that was gained through the hands-on experience. Indeed, the purely theoretical argumentation of the protocol presented in many papers rarely offer an appreciation of practical challenges that arose during implementation.

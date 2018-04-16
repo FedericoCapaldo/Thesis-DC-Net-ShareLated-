@@ -250,4 +250,7 @@ Figure \ref{fig:longRound} is the diagram that most faithfully represents the da
 
 Namely, communication is divided in the three types of round presented in section \ref{sec:threeRoundTypes}. The diagram represents the correct execution of the protocol with 4 participants. Communication starts with a voting round, in which one of the four clients states his intention to send a message. It follows a length-calculation round that allows the message sender to provide the sentence to be anonymously shared. Before the series of communication round starts, the server shares a number of keys in bulk with each adjacency. This way, the communication rounds can happen one after the other without repeating the key generation process at each round.
 
-Lastly, the server informs the clients that the communication rounds terminated. This event prompts the clients to display the aggregate message stored in their local memory.
+Lastly, the server informs the clients that the communication rounds terminated. This event prompts the clients to display the aggregate message stored in their local memory. \newline 
+
+
+Trying to design the application to meet the basic and advanced requirement showed that there the difficulty of designing a simulation for the Dining Cryptographers protocol stands in the data flow between clients and server rather than in the architecture of the system.
